@@ -22,8 +22,14 @@
             padding: 10px 20px;
             z-index: 1000;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links {
             overflow-x: auto;
             white-space: nowrap;
+            flex: 1;
         }
         .nav a {
             color: #e2e8f0;
@@ -45,6 +51,48 @@
             letter-spacing: 0.5px;
             margin-right: 8px;
             display: inline-block;
+        }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-left: auto;
+        }
+        .hamburger:hover { background: rgba(255,255,255,0.1); }
+        /* Mobile nav */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 10px 15px;
+                justify-content: space-between;
+            }
+            .nav-label { display: none; }
+            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+                width: 100%;
+                padding-top: 10px;
+                white-space: normal;
+            }
+            .nav-links.open {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .nav-links.open a {
+                padding: 10px 14px;
+                font-size: 0.95rem;
+                flex: 0 0 auto;
+            }
+            .nav-title {
+                color: white;
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
         }
         /* Back to top button */
         .back-to-top {
@@ -176,8 +224,16 @@
             font-size: 0.85rem;
         }
         .checklist { list-style: none; padding-left: 0; }
-        .checklist li { padding: 5px 0; }
-        .checklist li::before { content: "☐ "; font-size: 1.1rem; }
+        .checklist li { padding: 8px 0; display: flex; align-items: flex-start; gap: 10px; }
+        .checklist li input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #2d6a4f;
+            flex-shrink: 0;
+        }
+        .checklist li.checked label { text-decoration: line-through; color: #a0aec0; }
         .divider {
             border: none;
             height: 2px;
@@ -210,37 +266,53 @@
             color: #718096;
             font-style: italic;
         }
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 1.9rem; }
-            .hero { padding: 60px 15px; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 1rem; }
+            .hero { padding: 70px 15px; max-height: none; }
             .photo-row { grid-template-columns: 1fr; }
             .container { padding: 15px; }
-            .day-card { padding: 20px; }
-            .overview-section { margin-top: -20px; padding: 25px 18px; border-radius: 12px; }
+            .day-card { padding: 18px; margin: 20px 0; }
+            .overview-section { margin-top: -20px; padding: 20px 15px; border-radius: 12px; }
+            h2 { font-size: 1.4rem; margin: 40px 0 15px; }
+            h3 { font-size: 1.15rem; }
+            h4 { font-size: 0.95rem; }
+            p, li { font-size: 0.95rem; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px 10px; }
+            .tip-box, .warning-box { padding: 12px; font-size: 0.9rem; }
+            .free-badge, .stay-badge { font-size: 0.8rem; }
+            .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; font-size: 1.1rem; }
+            details summary { font-size: 0.9rem; padding: 10px 14px; }
+            iframe { height: 220px !important; }
         }
     </style>
 </head>
 <body>
 
 <nav class="nav" id="top">
-    <span class="nav-label">Jump to:</span>
-    <a href="#overview">Overview</a>
-    <a href="#june19">Jun 19</a>
-    <a href="#june20">Jun 20</a>
-    <a href="#june21">Jun 21</a>
-    <a href="#june22">Jun 22</a>
-    <a href="#june23">Jun 23 ✅</a>
-    <a href="#june24">Jun 24</a>
-    <a href="#june25">Jun 25</a>
-    <a href="#june26">Jun 26</a>
-    <a href="#june27">Jun 27</a>
-    <a href="#june28">Jun 28</a>
-    <a href="#photos">Photos</a>
-    <a href="#journal">Journal</a>
-    <a href="#packing">Packing</a>
-    <a href="#reservations">Booking</a>
-    <a href="#budget">Budget</a>
-    <a href="#links">Links</a>
+    <span class="nav-title">🏔️ Pointer Trip</span>
+    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+    <div class="nav-links" id="navLinks">
+        <span class="nav-label">Jump to:</span>
+        <a href="#overview">Overview</a>
+        <a href="#june19">Jun 19</a>
+        <a href="#june20">Jun 20</a>
+        <a href="#june21">Jun 21</a>
+        <a href="#june22">Jun 22</a>
+        <a href="#june23">Jun 23 ✅</a>
+        <a href="#june24">Jun 24</a>
+        <a href="#june25">Jun 25</a>
+        <a href="#june26">Jun 26</a>
+        <a href="#june27">Jun 27</a>
+        <a href="#june28">Jun 28</a>
+        <a href="#photos">Photos</a>
+        <a href="#journal">Journal</a>
+        <a href="#packing">Packing</a>
+        <a href="#reservations">Booking</a>
+        <a href="#budget">Budget</a>
+        <a href="#links">Links</a>
+    </div>
 </nav>
 
 <a href="#top" class="back-to-top" id="backToTop">↑</a>
@@ -759,35 +831,35 @@
 <div class="day-card">
     <h4>📄 Documents & Bookings</h4>
     <ul class="checklist">
-        <li>Passports (required for Canada border)</li>
-        <li>Vehicle registration & insurance (confirm Canada coverage)</li>
-        <li>✅ Lake Louise / Moraine Lake / Castle Mountain shuttle (June 23)</li>
-        <li>America the Beautiful Pass ($80) — covers Glacier + Yellowstone + Grand Teton</li>
-        <li>Columbia Icefield Ice Explorer booking (banffjaspercollection.com) — if doing Icefields Parkway June 24</li>
-        <li>All accommodations booked (9 nights)</li>
+        <li><input type="checkbox" id="c1"><label for="c1">Passports (required for Canada border)</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2">Vehicle registration & insurance (confirm Canada coverage)</label></li>
+        <li><input type="checkbox" id="c3" checked><label for="c3">✅ Lake Louise / Moraine Lake / Castle Mountain shuttle (June 23)</label></li>
+        <li><input type="checkbox" id="c4"><label for="c4">America the Beautiful Pass ($80) — covers Glacier + Yellowstone + Grand Teton</label></li>
+        <li><input type="checkbox" id="c5"><label for="c5">Columbia Icefield Ice Explorer booking (banffjaspercollection.com) — if doing Icefields Parkway June 24</label></li>
+        <li><input type="checkbox" id="c6"><label for="c6">All accommodations booked (9 nights)</label></li>
     </ul>
 
     <h4>🎒 Gear</h4>
     <ul class="checklist">
-        <li>Hiking boots (waterproof recommended — snowmelt crossings)</li>
-        <li>Microspikes/traction devices (high elevation snow at Glacier)</li>
-        <li>Rain jacket & layers (mornings 5–10°C / 40–50°F, afternoons 20–25°C / 68–77°F)</li>
-        <li>Sunscreen & sunglasses (high elevation UV is strong)</li>
-        <li>Bug spray (mosquitoes active near water in late June)</li>
-        <li>Reusable water bottles</li>
-        <li>Daypack for hikes</li>
-        <li>Swimsuit (Banff hot springs, lakes)</li>
-        <li>Binoculars (for wildlife — especially Lamar Valley wolves)</li>
+        <li><input type="checkbox" id="c7"><label for="c7">Hiking boots (waterproof recommended — snowmelt crossings)</label></li>
+        <li><input type="checkbox" id="c8"><label for="c8">Microspikes/traction devices (high elevation snow at Glacier)</label></li>
+        <li><input type="checkbox" id="c9"><label for="c9">Rain jacket & layers (mornings 5–10°C / 40–50°F, afternoons 20–25°C / 68–77°F)</label></li>
+        <li><input type="checkbox" id="c10"><label for="c10">Sunscreen & sunglasses (high elevation UV is strong)</label></li>
+        <li><input type="checkbox" id="c11"><label for="c11">Bug spray (mosquitoes active near water in late June)</label></li>
+        <li><input type="checkbox" id="c12"><label for="c12">Reusable water bottles</label></li>
+        <li><input type="checkbox" id="c13"><label for="c13">Daypack for hikes</label></li>
+        <li><input type="checkbox" id="c14"><label for="c14">Swimsuit (Banff hot springs, lakes)</label></li>
+        <li><input type="checkbox" id="c15"><label for="c15">Binoculars (for wildlife — especially Lamar Valley wolves)</label></li>
     </ul>
 
     <h4>🚗 Car</h4>
     <ul class="checklist">
-        <li>Full tank before entering parks</li>
-        <li>Snacks & water (limited services in parks)</li>
-        <li>Phone mount & offline maps downloaded (Glacier + Yellowstone have no service)</li>
-        <li>Playlists/podcasts for long drives</li>
-        <li>Car chargers for everyone's phones</li>
-        <li>Roadside emergency kit</li>
+        <li><input type="checkbox" id="c16"><label for="c16">Full tank before entering parks</label></li>
+        <li><input type="checkbox" id="c17"><label for="c17">Snacks & water (limited services in parks)</label></li>
+        <li><input type="checkbox" id="c18"><label for="c18">Phone mount & offline maps downloaded (Glacier + Yellowstone have no service)</label></li>
+        <li><input type="checkbox" id="c19"><label for="c19">Playlists/podcasts for long drives</label></li>
+        <li><input type="checkbox" id="c20"><label for="c20">Car chargers for everyone's phones</label></li>
+        <li><input type="checkbox" id="c21"><label for="c21">Roadside emergency kit</label></li>
     </ul>
 </div>
 
@@ -887,6 +959,19 @@
 </div>
 
 <script>
+// Hamburger menu toggle
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+});
+// Close menu when a link is clicked
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+    });
+});
+
 // Back to top button visibility
 const backToTop = document.getElementById('backToTop');
 window.addEventListener('scroll', () => {
@@ -899,8 +984,7 @@ window.addEventListener('scroll', () => {
 
 // Highlight active nav link on scroll
 const sections = document.querySelectorAll('h2[id], .day-card[id]');
-const navLinks = document.querySelectorAll('.nav a');
-
+const allNavLinks = document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll', () => {
     let current = '';
     sections.forEach(section => {
@@ -909,10 +993,33 @@ window.addEventListener('scroll', () => {
             current = section.getAttribute('id');
         }
     });
-    navLinks.forEach(link => {
+    allNavLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === '#' + current) {
             link.classList.add('active');
+        }
+    });
+});
+
+// Checkbox persistence with localStorage
+const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+checkboxes.forEach(cb => {
+    // Load saved state
+    const saved = localStorage.getItem('cb-' + cb.id);
+    if (saved === 'true') {
+        cb.checked = true;
+        cb.parentElement.classList.add('checked');
+    } else if (saved === 'false') {
+        cb.checked = false;
+        cb.parentElement.classList.remove('checked');
+    }
+    // Save on change
+    cb.addEventListener('change', () => {
+        localStorage.setItem('cb-' + cb.id, cb.checked);
+        if (cb.checked) {
+            cb.parentElement.classList.add('checked');
+        } else {
+            cb.parentElement.classList.remove('checked');
         }
     });
 });
