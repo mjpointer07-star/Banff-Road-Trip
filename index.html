@@ -15,6 +15,24 @@
             --gold: #c8932a; --line: #e3ded3;
             --drive: #2d6e8f; --park: #5b8c6e; --anchor: #c8932a;
             --radius: 14px;
+            --accent: #5b8c6e;
+        }
+        /* Location-based themes */
+        [data-location="glacier"] {
+            --pine: #2c4a6e; --pine-dk: #1a3350; --sage: #6ba3c9;
+            --stone: #f0f4f8; --line: #d4e0ec; --accent: #6ba3c9;
+        }
+        [data-location="banff"] {
+            --pine: #1f4034; --pine-dk: #13271f; --sage: #5b8c6e;
+            --stone: #f4f8f1; --line: #d3e2d3; --accent: #5b8c6e;
+        }
+        [data-location="yellowstone"] {
+            --pine: #5c3d1e; --pine-dk: #3d2810; --sage: #c8932a;
+            --stone: #faf6f0; --line: #e8dcc8; --accent: #c8932a;
+        }
+        [data-location="posttrip"] {
+            --pine: #6b4c2a; --pine-dk: #4a3318; --sage: #d4956a;
+            --stone: #fdf8f3; --line: #e8ddd0; --accent: #d4956a;
         }
         [data-theme="dark"] {
             --stone: #1a1d21; --card: #23272b; --ink: #e2e0dc; --muted: #9aa1a4;
@@ -102,8 +120,10 @@
         .photo-row img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; }
         @media(max-width:768px){ .photo-row { grid-template-columns: 1fr; } .photo-row img { height: 200px; } }
         /* BOXES */
-        .alert-box { background: var(--amber-bg); border: 1px solid #f0d9b8; border-left: 5px solid var(--amber); border-radius: 10px; padding: 16px 18px; margin: 20px 0; }
-        .alert-box h3 { color: var(--amber); font-size: 1rem; margin-bottom: 10px; }
+        .alert-box { background: var(--amber-bg); border: 1px solid #f0d9b8; border-left: 5px solid var(--amber); border-radius: 10px; padding: 20px 24px; margin: 25px 0; }
+        .alert-box h3 { color: var(--amber); font-size: 1rem; margin-bottom: 12px; }
+        .alert-box ul { padding-left: 20px; }
+        .alert-box li { margin: 10px 0; line-height: 1.6; }
         .tip-box { background: #eef5f0; border-left: 4px solid var(--sage); padding: 14px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; font-size: 0.9rem; }
         [data-theme="dark"] .tip-box { background: #1e2e24; }
         .free-badge { display: inline-block; background: rgba(91,140,110,0.15); color: var(--pine); padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 0.78rem; font-family: 'Inter', sans-serif; }
@@ -117,11 +137,16 @@
         .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--sage), var(--pine)); transition: width 0.4s ease; }
         .progress-label { font-size: 0.78rem; font-weight: 700; color: var(--pine); }
         /* LODGING */
-        .lodging-table { font-size: 0.85rem; }
-        .lodging-table input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; font-family: inherit; background: var(--stone); margin-top: 3px; }
+        .lodging-table { font-size: 0.85rem; table-layout: fixed; }
+        .lodging-table th:nth-child(1) { width: 12%; }
+        .lodging-table th:nth-child(2) { width: 18%; }
+        .lodging-table th:nth-child(3) { width: 40%; }
+        .lodging-table th:nth-child(4) { width: 30%; }
+        .lodging-table td { vertical-align: top; padding-top: 10px; padding-bottom: 10px; }
+        .lodging-table input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; font-family: inherit; background: var(--stone); display: block; margin-bottom: 4px; }
         .lodging-table input:focus { outline: none; border-color: var(--sage); box-shadow: 0 0 0 2px rgba(91,140,110,0.15); }
         .lodging-table .sub { display: block; font-size: 0.72rem; color: var(--muted); }
-        .dir-btn { background: var(--sky); color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
+        .dir-btn { background: var(--sky); color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; margin-top: 2px; }
         .total-row td { border-top: 2px solid var(--line); font-weight: 800; color: var(--pine); }
         /* LOG */
         .log-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
@@ -166,6 +191,29 @@
         .back-to-top { position: fixed; bottom: 30px; right: 20px; background: var(--sage); color: white; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; box-shadow: 0 3px 10px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s; z-index: 999; }
         .back-to-top.visible { opacity: 1; }
         .footer { text-align: center; padding: 30px 20px; color: var(--muted); font-size: 0.85rem; }
+        /* BINGO BOARD */
+        .bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 14px 0; max-width: 500px; }
+        .bingo-cell {
+            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--card); border: 2px solid var(--line); border-radius: 10px; cursor: pointer;
+            font-size: 0.7rem; font-weight: 600; text-align: center; padding: 4px; transition: all 0.2s;
+            user-select: none; font-family: 'Inter', sans-serif;
+        }
+        .bingo-cell .emoji { font-size: 1.4rem; margin-bottom: 2px; }
+        .bingo-cell:hover { border-color: var(--sage); transform: scale(1.03); }
+        .bingo-cell.found { background: rgba(91,140,110,0.2); border-color: var(--sage); }
+        .bingo-cell.found .emoji::after { content: " ✓"; font-size: 0.8rem; }
+        .bingo-cell.free { background: var(--amber-bg); border-color: var(--gold); }
+        .bingo-status { font-size: 0.9rem; font-weight: 700; color: var(--pine); margin: 12px 0; }
+        @media(max-width:768px){ .bingo-grid { max-width: 100%; } .bingo-cell { font-size: 0.6rem; } .bingo-cell .emoji { font-size: 1.1rem; } }
+        /* POST-TRIP SUMMARY */
+        .posttrip-card { background: linear-gradient(135deg, rgba(200,147,42,0.1), rgba(212,149,106,0.1)); border: 2px solid var(--gold); border-radius: var(--radius); padding: 24px; text-align: center; margin: 20px 0; }
+        .posttrip-card h3 { color: var(--gold); }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+        .stat-box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+        .stat-box .num { font-size: 1.8rem; font-weight: 800; color: var(--pine); }
+        .stat-box .lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        @media(max-width:768px){ .stat-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
@@ -180,7 +228,7 @@
         <a href="#june22">22</a><a href="#june23">23✅</a><a href="#june24">24</a>
         <a href="#june25">25</a><a href="#june26">26</a><a href="#june27">27</a><a href="#june28">28</a>
         <a href="#lodging">Lodging</a><a href="#photos">Photos</a>
-        <a href="#packing">Pack</a><a href="#triplog">Log</a><a href="#budget">$</a><a href="#links">Links</a>
+        <a href="#packing">Pack</a><a href="#triplog">Log</a><a href="#budget">$</a><a href="#links">Links</a><a href="#bingo">Bingo</a>
     </div>
 </nav>
 
@@ -423,12 +471,37 @@
 <h2 id="lodging">🛏️ Where You Sleep</h2>
 <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:14px 0;">
     <table class="lodging-table">
-        <tr><th>Nights</th><th>Base</th><th>Booking</th><th>Conf / Cost</th></tr>
-        <tr><td>Jun 19</td><td>Great Falls<span class="sub">Transit</span></td><td><input data-key="h-gf" placeholder="Hotel…"><input data-key="a-gf" placeholder="Address…"><button class="dir-btn" data-addr="a-gf">🧭</button></td><td><input data-key="c-gf" placeholder="Conf #"><input data-key="$-gf" placeholder="$ cost"></td></tr>
-        <tr><td>Jun 20–21</td><td>St. Mary<span class="sub">Glacier east</span></td><td><input data-key="h-gl" placeholder="Hotel…"><input data-key="a-gl" placeholder="Address…"><button class="dir-btn" data-addr="a-gl">🧭</button></td><td><input data-key="c-gl" placeholder="Conf #"><input data-key="$-gl" placeholder="$ cost"></td></tr>
-        <tr><td>Jun 22–24</td><td>Banff / Canmore<span class="sub">Tour + Icefields</span></td><td><input data-key="h-bf" placeholder="Hotel…"><input data-key="a-bf" placeholder="Address…"><button class="dir-btn" data-addr="a-bf">🧭</button></td><td><input data-key="c-bf" placeholder="Conf #"><input data-key="$-bf" placeholder="$ cost"></td></tr>
-        <tr><td>Jun 25–26</td><td>Gardiner, MT<span class="sub">N. Yellowstone</span></td><td><input data-key="h-gd" placeholder="Hotel…"><input data-key="a-gd" placeholder="Address…"><button class="dir-btn" data-addr="a-gd">🧭</button></td><td><input data-key="c-gd" placeholder="Conf #"><input data-key="$-gd" placeholder="$ cost"></td></tr>
-        <tr><td>Jun 27</td><td>Jackson, WY<span class="sub">Tetons</span></td><td><input data-key="h-jk" placeholder="Hotel…"><input data-key="a-jk" placeholder="Address…"><button class="dir-btn" data-addr="a-jk">🧭</button></td><td><input data-key="c-jk" placeholder="Conf #"><input data-key="$-jk" placeholder="$ cost"></td></tr>
+        <tr><th>Nights</th><th>Base</th><th>Hotel / Address</th><th>Conf # / Cost</th></tr>
+        <tr>
+            <td>Jun 19</td>
+            <td>Great Falls<span class="sub">Transit</span></td>
+            <td><input data-key="h-gf" placeholder="Hotel name…"><input data-key="a-gf" placeholder="Address…"><button class="dir-btn" data-addr="a-gf">🧭 Directions</button></td>
+            <td><input data-key="c-gf" placeholder="Conf #"><input data-key="$-gf" placeholder="$ cost"></td>
+        </tr>
+        <tr>
+            <td>Jun 20–21</td>
+            <td>St. Mary<span class="sub">Glacier east</span></td>
+            <td><input data-key="h-gl" placeholder="Hotel name…"><input data-key="a-gl" placeholder="Address…"><button class="dir-btn" data-addr="a-gl">🧭 Directions</button></td>
+            <td><input data-key="c-gl" placeholder="Conf #"><input data-key="$-gl" placeholder="$ cost"></td>
+        </tr>
+        <tr>
+            <td>Jun 22–24</td>
+            <td>Banff / Canmore<span class="sub">Tour + Icefields</span></td>
+            <td><input data-key="h-bf" placeholder="Hotel name…"><input data-key="a-bf" placeholder="Address…"><button class="dir-btn" data-addr="a-bf">🧭 Directions</button></td>
+            <td><input data-key="c-bf" placeholder="Conf #"><input data-key="$-bf" placeholder="$ cost"></td>
+        </tr>
+        <tr>
+            <td>Jun 25–26</td>
+            <td>Gardiner, MT<span class="sub">N. Yellowstone</span></td>
+            <td><input data-key="h-gd" placeholder="Hotel name…"><input data-key="a-gd" placeholder="Address…"><button class="dir-btn" data-addr="a-gd">🧭 Directions</button></td>
+            <td><input data-key="c-gd" placeholder="Conf #"><input data-key="$-gd" placeholder="$ cost"></td>
+        </tr>
+        <tr>
+            <td>Jun 27</td>
+            <td>Jackson, WY<span class="sub">Tetons</span></td>
+            <td><input data-key="h-jk" placeholder="Hotel name…"><input data-key="a-jk" placeholder="Address…"><button class="dir-btn" data-addr="a-jk">🧭 Directions</button></td>
+            <td><input data-key="c-jk" placeholder="Conf #"><input data-key="$-jk" placeholder="$ cost"></td>
+        </tr>
         <tr class="total-row"><td colspan="3" style="text-align:right;">Total</td><td id="lodgeTotal">$0</td></tr>
     </table>
     <p style="font-size:0.75rem;color:var(--muted);margin-top:8px;">💾 Auto-saves in this browser. <button class="mini-btn" onclick="if(confirm('Clear all?')){localStorage.removeItem('ptr2-lodge');location.reload();}">Clear</button></p>
@@ -537,6 +610,32 @@
     <tr><td>Weather — Yellowstone</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=44.66&lon=-111.1" target="_blank">Visit →</a></td></tr>
 </table>
 
+<hr class="divider">
+
+<!-- BINGO -->
+<h2 id="bingo">🎯 Road Trip Bingo</h2>
+<p style="font-size:0.9rem;color:var(--muted);">Tap a square when you spot it! Get 5 in a row to win. Works offline — each person plays on their own phone.</p>
+<div class="bingo-status" id="bingoStatus">0 / 25 spotted</div>
+<div class="bingo-grid" id="bingoGrid"></div>
+<button class="mini-btn" onclick="if(confirm('Reset your bingo board?')){localStorage.removeItem('ptr2-bingo');location.reload();}">Reset Board</button>
+
+<hr class="divider">
+
+<!-- POST-TRIP SUMMARY (shows after June 28) -->
+<div id="postTripSection" style="display:none;">
+<h2 id="recap">✨ Trip Recap</h2>
+<div class="posttrip-card">
+    <h3>🏔️ The Pointer Family did it!</h3>
+    <p>Rocky Mountain Loop 2026 — Complete</p>
+    <div class="stat-grid">
+        <div class="stat-box"><div class="num" id="statMiles">0</div><div class="lbl">Miles Driven</div></div>
+        <div class="stat-box"><div class="num" id="statFuel">$0</div><div class="lbl">Fuel Spent</div></div>
+        <div class="stat-box"><div class="num" id="statBingo">0</div><div class="lbl">Bingo Spots</div></div>
+    </div>
+    <p style="margin-top:16px;"><a href="PASTE_GOOGLE_PHOTOS_LINK" target="_blank" style="display:inline-block;background:var(--sage);color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;">📸 View All Trip Photos</a></p>
+</div>
+</div>
+
 <div class="footer">🏔️ The Pointer Family Rocky Mountain Loop 2026 🏔️</div>
 </div><!-- end wrap -->
 
@@ -547,7 +646,7 @@
         <a href="#lodging"><span class="ico">🗺️</span>Map</a>
         <a href="#photos"><span class="ico">📸</span>Photos</a>
         <a href="#packing"><span class="ico">✅</span>Pack</a>
-        <a href="#triplog"><span class="ico">🧾</span>Log</a>
+        <a href="#bingo"><span class="ico">🎯</span>Bingo</a>
     </div>
 </div>
 
@@ -650,6 +749,97 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
 if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
+
+// Location-based theme + auto-scroll to today
+(function(){
+    var tripStart = new Date('2026-06-19'), now = new Date();
+    var dayNum = Math.floor((now - tripStart)/(1000*60*60*24)) + 1;
+    var loc = 'banff'; // default
+    if(now < tripStart) { loc = 'banff'; }
+    else if(dayNum <= 1) loc = 'glacier'; // Jun 19 - driving to glacier area
+    else if(dayNum <= 3) loc = 'glacier'; // Jun 20-21
+    else if(dayNum <= 6) loc = 'banff';   // Jun 22-24
+    else if(dayNum <= 9) loc = 'yellowstone'; // Jun 25-27
+    else if(dayNum === 10) loc = 'yellowstone'; // Jun 28
+    else loc = 'posttrip';
+    document.documentElement.setAttribute('data-location', loc);
+
+    // Auto-scroll to today's card
+    if(dayNum >= 1 && dayNum <= 10){
+        var dayId = 'june' + (18 + dayNum);
+        var card = document.getElementById(dayId);
+        if(card){
+            card.style.border = '2px solid var(--gold)';
+            card.open = true;
+            setTimeout(function(){ card.scrollIntoView({behavior:'smooth', block:'start'}); }, 500);
+        }
+    }
+
+    // Post-trip mode
+    if(now > new Date('2026-06-28T23:59:59')){
+        var pts = document.getElementById('postTripSection');
+        if(pts) pts.style.display = 'block';
+        // Populate stats from trip log
+        var drv = []; try{drv=JSON.parse(localStorage.getItem('ptr2-drv')||'[]');}catch(e){}
+        var fuel = []; try{fuel=JSON.parse(localStorage.getItem('ptr2-fuel')||'[]');}catch(e){}
+        var totalMi=0; drv.forEach(function(e){totalMi+=parseFloat(String(e.m||0).replace(/[^0-9.]/g,''))||0;});
+        var totalFuel=0; fuel.forEach(function(e){totalFuel+=parseFloat(String(e.c||0).replace(/[^0-9.]/g,''))||0;});
+        var bingo=[]; try{bingo=JSON.parse(localStorage.getItem('ptr2-bingo')||'[]');}catch(e){}
+        var bingoCount = bingo.filter(function(b){return b;}).length;
+        var em=document.getElementById('statMiles'); if(em) em.textContent=Math.round(totalMi).toLocaleString();
+        var ef=document.getElementById('statFuel'); if(ef) ef.textContent='$'+Math.round(totalFuel).toLocaleString();
+        var eb=document.getElementById('statBingo'); if(eb) eb.textContent=bingoCount+'/25';
+    }
+})();
+
+// Bingo Board
+(function(){
+    var ITEMS = [
+        {e:'🦬',t:'Bison'},{e:'🦅',t:'Bald Eagle'},{e:'🫎',t:'Moose'},{e:'🐐',t:'Mtn Goat'},{e:'🐻',t:'Bear'},
+        {e:'🦌',t:'Elk'},{e:'💧',t:'Waterfall'},{e:'💎',t:'Turquoise Lake'},{e:'❄️',t:'Snow in June'},{e:'🐿️',t:'Chipmunk'},
+        {e:'🚗',t:'Wildlife Jam'},{e:'🌈',t:'Rainbow'},{e:'⭐',t:'FREE',free:true},{e:'🌅',t:'Sunset Photo'},{e:'🦌',t:'Deer'},
+        {e:'🧊',t:'Glacier/Ice'},{e:'🌸',t:'Wildflowers'},{e:'🦅',t:'Osprey/Hawk'},{e:'🐺',t:'Wolf'},{e:'🐏',t:'Bighorn Sheep'},
+        {e:'♨️',t:'Hot Spring'},{e:'🐺',t:'Coyote'},{e:'🦫',t:'Marmot'},{e:'🫎',t:'Pronghorn'},{e:'🌌',t:'Starry Night'}
+    ];
+    var KEY = 'ptr2-bingo';
+    var state = []; try{state=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}
+    if(state.length!==25) state = ITEMS.map(function(item){return item.free||false;});
+
+    var grid = document.getElementById('bingoGrid');
+    function render(){
+        grid.innerHTML = '';
+        var found = 0;
+        ITEMS.forEach(function(item, i){
+            var cell = document.createElement('div');
+            cell.className = 'bingo-cell' + (state[i]?' found':'') + (item.free?' free':'');
+            cell.innerHTML = '<span class="emoji">'+item.e+'</span>'+item.t;
+            if(!item.free){
+                cell.addEventListener('click', function(){
+                    state[i] = !state[i];
+                    localStorage.setItem(KEY, JSON.stringify(state));
+                    render();
+                    checkBingo();
+                });
+            }
+            grid.appendChild(cell);
+            if(state[i]) found++;
+        });
+        document.getElementById('bingoStatus').textContent = found+' / 25 spotted' + (checkBingo()?' — 🎉 BINGO!':'');
+    }
+    function checkBingo(){
+        // Check rows, cols, diagonals
+        for(var r=0;r<5;r++){
+            if(state[r*5]&&state[r*5+1]&&state[r*5+2]&&state[r*5+3]&&state[r*5+4]) return true;
+        }
+        for(var c=0;c<5;c++){
+            if(state[c]&&state[c+5]&&state[c+10]&&state[c+15]&&state[c+20]) return true;
+        }
+        if(state[0]&&state[6]&&state[12]&&state[18]&&state[24]) return true;
+        if(state[4]&&state[8]&&state[12]&&state[16]&&state[20]) return true;
+        return false;
+    }
+    render();
+})();
 </script>
 </body>
 </html>
