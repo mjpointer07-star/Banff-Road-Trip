@@ -76,6 +76,7 @@
             backdrop-filter: blur(10px); padding: 10px 20px; z-index: 1000;
             box-shadow: 0 2px 12px rgba(0,0,0,0.2); display: flex; align-items: center; flex-wrap: wrap;
         }
+        .trip-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--sage), var(--gold)); transition: width 0.5s ease; }
         .nav-links { white-space: nowrap; flex: 1; overflow-x: auto; scrollbar-width: none; }
         .nav-links::-webkit-scrollbar { display: none; }
         .nav a { color: #cdddd3; text-decoration: none; padding: 7px 11px; border-radius: 6px; font-size: 0.82rem; font-weight: 500; display: inline-block; transition: all 0.2s; font-family: 'Inter', sans-serif; }
@@ -334,6 +335,7 @@
 </div>
 
 <nav class="nav" id="top">
+    <div class="trip-progress" id="tripProgress" style="width:0%"></div>
     <span class="nav-title">🏔️ Pointer Trip</span>
     <button class="hamburger" id="hamburger">☰</button>
     <button class="dark-toggle" id="darkToggle">🌙</button>
@@ -838,7 +840,11 @@
 </div>
 </div>
 
-<div class="footer">🏔️ The Pointer Family Rocky Mountain Loop 2026 🏔️</div>
+<div class="footer">
+    <div id="ambientCounter" style="font-size:0.85rem;font-weight:600;color:var(--sage);margin-bottom:10px;"></div>
+    <button class="mini-btn" id="shareBtn" style="margin-bottom:12px;" onclick="shareTrip()">📤 Share This Trip</button>
+    <p>🏔️ The Pointer Family Rocky Mountain Loop 2026 🏔️</p>
+</div>
 </div><!-- end wrap -->
 
 <!-- BOTTOM NAV (mobile) -->
@@ -1190,6 +1196,45 @@ if('serviceWorker' in navigator){
         if(loader){ loader.classList.add('hide'); setTimeout(function(){ loader.remove(); }, 400); }
     }, 600);
 })();
+
+// Trip progress bar (fills based on days marked done)
+(function(){
+    var days = ['june19','june20','june21','june22','june23','june24','june25','june26','june27','june28'];
+    var done = 0;
+    days.forEach(function(id){ if(localStorage.getItem('ptr2-done-'+id)==='true') done++; });
+    var pct = Math.round((done/days.length)*100);
+    var bar = document.getElementById('tripProgress');
+    if(bar) bar.style.width = pct+'%';
+})();
+
+// Ambient day/mile counter
+(function(){
+    var tripStart = new Date('2026-06-19'), now = new Date();
+    var el = document.getElementById('ambientCounter');
+    if(!el) return;
+    if(now < tripStart){
+        el.textContent = '';
+    } else if(now <= new Date('2026-06-28T23:59:59')){
+        var dayNum = Math.floor((now - tripStart)/(1000*60*60*24)) + 1;
+        var estMiles = [0, 750, 900, 900, 1190, 1190, 1190, 1740, 1740, 2010, 2450];
+        var mi = estMiles[dayNum] || 0;
+        el.textContent = '🛣️ Day '+dayNum+' of 10 · ~'+mi.toLocaleString()+' miles into the loop';
+    } else {
+        el.textContent = '🏁 Trip complete — ~2,900 miles driven!';
+    }
+})();
+
+// Share button (native share API)
+function shareTrip(){
+    var data = { title: 'Pointer Family Road Trip 2026', text: 'Check out our Rocky Mountain road trip itinerary!', url: window.location.href };
+    if(navigator.share){ navigator.share(data).catch(function(){}); }
+    else {
+        // Fallback: copy link
+        navigator.clipboard.writeText(window.location.href).then(function(){
+            alert('Link copied to clipboard!');
+        }).catch(function(){ alert('Share: '+window.location.href); });
+    }
+}
 
 // Bottom nav active section highlighting
 (function(){
