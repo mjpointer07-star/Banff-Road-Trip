@@ -69,11 +69,11 @@
         .dark-toggle { background: none; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; margin-left: 8px; font-family: 'Inter', sans-serif; }
         .dark-toggle:hover { background: rgba(255,255,255,0.1); }
         @media(max-width:768px){
-            .nav { padding: 8px 12px; display: flex; align-items: center; }
-            .nav-title { display: block; flex: 1; }
-            .hamburger { display: block; order: 3; }
-            .dark-toggle { order: 2; margin: 0 6px 0 0; font-size: 0.7rem; padding: 4px 8px; }
-            .nav-links { display: none; width: 100%; padding-top: 12px; white-space: normal; overflow: visible; order: 4; }
+            .nav { padding: 8px 12px; display: flex; align-items: center; flex-wrap: wrap; }
+            .nav-title { display: block; }
+            .hamburger { display: block; margin-left: auto; }
+            .dark-toggle { order: 0; margin: 0 8px 0 0; font-size: 0.7rem; padding: 4px 8px; }
+            .nav-links { display: none; flex-basis: 100%; padding-top: 12px; white-space: normal; overflow: visible; }
             .nav-links.open { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
             .nav-links.open a { padding: 11px 8px; font-size: 0.82rem; text-align: center; border-radius: 8px; background: rgba(255,255,255,0.07); }
         }
@@ -895,6 +895,19 @@ if('serviceWorker' in navigator){
             btn.textContent = done ? '\u2713 Day complete' : '\u2713 Done for the day';
             localStorage.setItem('ptr2-done-'+id, done);
             if(done && navigator.vibrate) navigator.vibrate(50);
+            // Close this day, open next day, scroll to it
+            if(done){
+                detail.open = false;
+                var idx = days.indexOf(id);
+                if(idx < days.length - 1){
+                    var nextId = days[idx + 1];
+                    var nextCard = document.getElementById(nextId);
+                    if(nextCard){
+                        nextCard.open = true;
+                        setTimeout(function(){ nextCard.scrollIntoView({behavior:'smooth', block:'start'}); }, 300);
+                    }
+                }
+            }
         });
         body.appendChild(btn);
     });
