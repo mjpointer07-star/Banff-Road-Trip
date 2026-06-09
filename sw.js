@@ -1,7 +1,8 @@
-const CACHE_NAME = 'pointer-trip-v3';
+const CACHE_NAME = 'pointer-trip-v4';
 const ASSETS = [
     './',
     './index.html',
+    './manifest.json',
     './images/Wyoming- Montana Drive.jpg',
     './images/Going-to-the-Sun-Road_Glacier-National-Park.jpeg',
     './images/Hidden Lake.webp',

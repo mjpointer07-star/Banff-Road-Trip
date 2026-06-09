@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pointer Family — Rocky Mountain Loop 2026</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+    <meta name="theme-color" content="#1f4034">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pointer Trip">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -226,6 +233,31 @@
         .day-note input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; font-family: inherit; background: var(--stone); }
         .day-note input:focus { outline: none; border-color: var(--sage); }
         .day-note label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 4px; }
+        /* MICRO-ANIMATIONS */
+        .day-detail[open] .day-body { animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .bingo-cell { transition: all 0.15s ease; }
+        .bingo-cell:active { transform: scale(0.92); }
+        .bingo-cell.just-found { animation: pulse 0.3s ease; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        /* Hero gradient animation */
+        .hero { animation: heroShift 20s ease infinite alternate; }
+        @keyframes heroShift { 0% { background-color: rgba(19,39,31,0.5); } 100% { background-color: rgba(45,110,143,0.4); } }
+        /* Photo blur-up */
+        .photo { opacity: 0; transition: opacity 0.4s ease; }
+        .photo.loaded { opacity: 1; }
+        /* Confetti */
+        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti-piece { position: absolute; width: 10px; height: 10px; top: -10px; border-radius: 2px; animation: confettiFall 3s ease forwards; }
+        @keyframes confettiFall { to { top: 110vh; transform: rotate(720deg) translateX(100px); opacity: 0; } }
+        /* Done button */
+        .done-btn { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--stone); font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; color: var(--muted); transition: all 0.2s; }
+        .done-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
+        .done-btn.completed { background: var(--sage); color: white; border-color: var(--sage); }
+        .day-detail.day-done { opacity: 0.5; }
+        .day-detail.day-done > summary { background: rgba(91,140,110,0.1); }
+        /* Version stamp */
+        .version-stamp { font-size: 0.7rem; color: var(--muted); text-align: center; padding: 6px; }
         .posttrip-card h3 { color: var(--gold); }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
         .stat-box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
@@ -737,20 +769,36 @@ document.querySelectorAll('#navLinks a').forEach(function(a){ a.addEventListener
 // Back to top
 window.addEventListener('scroll', function(){ document.getElementById('backToTop').classList.toggle('visible', window.scrollY>400); });
 
-// Countdown / Today highlight
+// Countdown / Today highlight + Fun Facts
 (function(){
     var tripStart = new Date('2026-06-19'), tripEnd = new Date('2026-06-28'), now = new Date();
     var el = document.getElementById('countdown');
+    var facts = [
+        'Moraine Lake is at 1,884m elevation',
+        'Yellowstone has 10,000+ thermal features',
+        'Glacier NP has 762 lakes (only 131 are named)',
+        'Old Faithful erupts every ~90 minutes',
+        'The Icefields Parkway is 232km of pure wow',
+        'Lamar Valley is called the Serengeti of North America',
+        'Banff was Canada\'s first national park (1885)',
+        'Grand Prismatic Spring is larger than a football field',
+        'Mountain goats can climb nearly vertical cliffs',
+        'Going-to-the-Sun Road took 11 years to build'
+    ];
+    var fact = facts[Math.floor(Math.random()*facts.length)];
     if(now < tripStart){
         var days = Math.ceil((tripStart - now)/(1000*60*60*24));
-        el.textContent = '🗓️ ' + days + ' days until departure!';
+        el.textContent = '🗓️ ' + days + ' days until departure';
+        el.title = fact;
+        setTimeout(function(){ el.textContent += ' · ' + fact; }, 2000);
     } else if(now >= tripStart && now <= tripEnd){
         var dayNum = Math.floor((now - tripStart)/(1000*60*60*24)) + 1;
-        el.textContent = '🎉 Day ' + dayNum + ' of the trip — enjoy!';
-        // Highlight today's card
+        el.textContent = '🎉 Day ' + dayNum + ' of the trip!';
         var dayId = 'june' + (18 + dayNum);
         var card = document.getElementById(dayId);
-        if(card){ card.style.border = '2px solid var(--gold)'; card.open = true; }
+        if(card){ card.style.border = '2px solid var(--gold)'; card.open = true;
+            setTimeout(function(){ card.scrollIntoView({behavior:'smooth', block:'start'}); }, 600);
+        }
     } else {
         el.textContent = '✨ Trip complete — what a ride!';
     }
@@ -817,7 +865,7 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
 
-// Daily micro-journal notes
+// Daily micro-journal notes + "Done for today" buttons
 (function(){
     var days = ['june19','june20','june21','june22','june23','june24','june25','june26','june27','june28'];
     days.forEach(function(id){
@@ -825,14 +873,38 @@ if('serviceWorker' in navigator){
         if(!detail) return;
         var body = detail.querySelector('.day-body');
         if(!body) return;
+        // Micro-journal
         var div = document.createElement('div');
         div.className = 'day-note';
-        div.innerHTML = '<label>✏️ Highlight of the day</label><input type="text" placeholder="Best moment, funny quote, favorite spot…" data-note="'+id+'">';
+        div.innerHTML = '<label>\u270f\ufe0f Highlight of the day</label><input type="text" placeholder="Best moment, funny quote, favorite spot\u2026" data-note="'+id+'">';
         body.appendChild(div);
         var inp = div.querySelector('input');
         var saved = localStorage.getItem('ptr2-note-'+id);
         if(saved) inp.value = saved;
         inp.addEventListener('input', function(){ localStorage.setItem('ptr2-note-'+id, inp.value); });
+        // Done button
+        var btn = document.createElement('button');
+        btn.className = 'done-btn';
+        btn.textContent = '\u2713 Done for the day';
+        var isDone = localStorage.getItem('ptr2-done-'+id)==='true';
+        if(isDone){ btn.classList.add('completed'); btn.textContent='\u2713 Day complete'; detail.classList.add('day-done'); }
+        btn.addEventListener('click', function(){
+            var done = !detail.classList.contains('day-done');
+            detail.classList.toggle('day-done', done);
+            btn.classList.toggle('completed', done);
+            btn.textContent = done ? '\u2713 Day complete' : '\u2713 Done for the day';
+            localStorage.setItem('ptr2-done-'+id, done);
+            if(done && navigator.vibrate) navigator.vibrate(50);
+        });
+        body.appendChild(btn);
+    });
+})();
+
+// Photo lazy-load with fade-in
+(function(){
+    document.querySelectorAll('.photo').forEach(function(img){
+        if(img.complete){ img.classList.add('loaded'); }
+        else { img.addEventListener('load', function(){ img.classList.add('loaded'); }); }
     });
 })();
 
@@ -878,7 +950,7 @@ if('serviceWorker' in navigator){
     }
 })();
 
-// Bingo Board
+// Bingo Board with confetti + haptics
 (function(){
     var ITEMS = [
         {e:'🦬',t:'Bison'},{e:'🦅',t:'Bald Eagle'},{e:'🫎',t:'Moose'},{e:'🐐',t:'Mtn Goat'},{e:'🐻',t:'Bear'},
@@ -890,6 +962,7 @@ if('serviceWorker' in navigator){
     var KEY = 'ptr2-bingo';
     var state = []; try{state=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}
     if(state.length!==25) state = ITEMS.map(function(item){return item.free||false;});
+    var hadBingo = checkBingo();
 
     var grid = document.getElementById('bingoGrid');
     function render(){
@@ -903,8 +976,16 @@ if('serviceWorker' in navigator){
                 cell.addEventListener('click', function(){
                     state[i] = !state[i];
                     localStorage.setItem(KEY, JSON.stringify(state));
+                    if(state[i]){
+                        cell.classList.add('just-found');
+                        setTimeout(function(){cell.classList.remove('just-found');},300);
+                        // Haptic feedback
+                        if(navigator.vibrate) navigator.vibrate(30);
+                    }
                     render();
-                    checkBingo();
+                    var nowBingo = checkBingo();
+                    if(nowBingo && !hadBingo){ fireConfetti(); hadBingo = true; }
+                    if(!nowBingo) hadBingo = false;
                 });
             }
             grid.appendChild(cell);
@@ -913,16 +994,30 @@ if('serviceWorker' in navigator){
         document.getElementById('bingoStatus').textContent = found+' / 25 spotted' + (checkBingo()?' — 🎉 BINGO!':'');
     }
     function checkBingo(){
-        // Check rows, cols, diagonals
-        for(var r=0;r<5;r++){
-            if(state[r*5]&&state[r*5+1]&&state[r*5+2]&&state[r*5+3]&&state[r*5+4]) return true;
-        }
-        for(var c=0;c<5;c++){
-            if(state[c]&&state[c+5]&&state[c+10]&&state[c+15]&&state[c+20]) return true;
-        }
+        for(var r=0;r<5;r++){if(state[r*5]&&state[r*5+1]&&state[r*5+2]&&state[r*5+3]&&state[r*5+4]) return true;}
+        for(var c=0;c<5;c++){if(state[c]&&state[c+5]&&state[c+10]&&state[c+15]&&state[c+20]) return true;}
         if(state[0]&&state[6]&&state[12]&&state[18]&&state[24]) return true;
         if(state[4]&&state[8]&&state[12]&&state[16]&&state[20]) return true;
         return false;
+    }
+    function fireConfetti(){
+        if(navigator.vibrate) navigator.vibrate([100,50,100]);
+        var container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+        var colors = ['#c8932a','#5b8c6e','#2d6e8f','#b5651d','#e74c3c','#9b59b6','#f39c12'];
+        for(var i=0;i<60;i++){
+            var piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random()*100+'%';
+            piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+            piece.style.animationDelay = Math.random()*0.5+'s';
+            piece.style.animationDuration = (2+Math.random()*2)+'s';
+            piece.style.width = (6+Math.random()*8)+'px';
+            piece.style.height = (6+Math.random()*8)+'px';
+            container.appendChild(piece);
+        }
+        setTimeout(function(){container.remove();},4000);
     }
     render();
 })();
