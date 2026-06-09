@@ -148,6 +148,19 @@
         .lodging-table .sub { display: block; font-size: 0.72rem; color: var(--muted); }
         .dir-btn { background: var(--sky); color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; margin-top: 2px; }
         .total-row td { border-top: 2px solid var(--line); font-weight: 800; color: var(--pine); }
+        /* Mobile lodging: hide table, show cards */
+        .lodging-mobile { display: none; }
+        @media(max-width:768px){
+            .lodging-table { display: none; }
+            .lodging-mobile { display: block; }
+            .lodge-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin: 10px 0; }
+            .lodge-card .lodge-header { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+            .lodge-card .lodge-sub { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
+            .lodge-card input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.85rem; font-family: inherit; background: var(--stone); margin-bottom: 6px; display: block; }
+            .lodge-card input:focus { outline: none; border-color: var(--sage); }
+            .lodge-card .lodge-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+            .lodge-card .dir-btn { margin-top: 4px; }
+        }
         /* LOG */
         .log-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
         .log-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
@@ -505,6 +518,51 @@
         <tr class="total-row"><td colspan="3" style="text-align:right;">Total</td><td id="lodgeTotal">$0</td></tr>
     </table>
     <p style="font-size:0.75rem;color:var(--muted);margin-top:8px;">💾 Auto-saves in this browser. <button class="mini-btn" onclick="if(confirm('Clear all?')){localStorage.removeItem('ptr2-lodge');location.reload();}">Clear</button></p>
+
+    <!-- Mobile lodging cards (hidden on desktop) -->
+    <div class="lodging-mobile">
+        <div class="lodge-card">
+            <div class="lodge-header">Jun 19 — Great Falls, MT</div>
+            <div class="lodge-sub">Transit stop</div>
+            <input data-key="h-gf" placeholder="Hotel name…">
+            <input data-key="a-gf" placeholder="Address…">
+            <div class="lodge-row"><input data-key="c-gf" placeholder="Conf #"><input data-key="$-gf" placeholder="$ cost"></div>
+            <button class="dir-btn" data-addr="a-gf">🧭 Directions</button>
+        </div>
+        <div class="lodge-card">
+            <div class="lodge-header">Jun 20–21 — St. Mary / Babb</div>
+            <div class="lodge-sub">Glacier NP east side</div>
+            <input data-key="h-gl" placeholder="Hotel name…">
+            <input data-key="a-gl" placeholder="Address…">
+            <div class="lodge-row"><input data-key="c-gl" placeholder="Conf #"><input data-key="$-gl" placeholder="$ cost"></div>
+            <button class="dir-btn" data-addr="a-gl">🧭 Directions</button>
+        </div>
+        <div class="lodge-card">
+            <div class="lodge-header">Jun 22–24 — Banff / Canmore</div>
+            <div class="lodge-sub">Tour + Icefields Parkway</div>
+            <input data-key="h-bf" placeholder="Hotel name…">
+            <input data-key="a-bf" placeholder="Address…">
+            <div class="lodge-row"><input data-key="c-bf" placeholder="Conf #"><input data-key="$-bf" placeholder="$ cost"></div>
+            <button class="dir-btn" data-addr="a-bf">🧭 Directions</button>
+        </div>
+        <div class="lodge-card">
+            <div class="lodge-header">Jun 25–26 — Gardiner, MT</div>
+            <div class="lodge-sub">North Yellowstone + Lamar</div>
+            <input data-key="h-gd" placeholder="Hotel name…">
+            <input data-key="a-gd" placeholder="Address…">
+            <div class="lodge-row"><input data-key="c-gd" placeholder="Conf #"><input data-key="$-gd" placeholder="$ cost"></div>
+            <button class="dir-btn" data-addr="a-gd">🧭 Directions</button>
+        </div>
+        <div class="lodge-card">
+            <div class="lodge-header">Jun 27 — Jackson, WY</div>
+            <div class="lodge-sub">Tetons + drive home</div>
+            <input data-key="h-jk" placeholder="Hotel name…">
+            <input data-key="a-jk" placeholder="Address…">
+            <div class="lodge-row"><input data-key="c-jk" placeholder="Conf #"><input data-key="$-jk" placeholder="$ cost"></div>
+            <button class="dir-btn" data-addr="a-jk">🧭 Directions</button>
+        </div>
+        <div style="margin-top:12px;font-weight:800;color:var(--pine);">Total: <span id="lodgeTotalMobile">$0</span></div>
+    </div>
 </div>
 
 <hr class="divider">
@@ -707,12 +765,12 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
 
 // Lodging
 (function(){
-    var K='ptr2-lodge', inps=document.querySelectorAll('.lodging-table input');
+    var K='ptr2-lodge', inps=document.querySelectorAll('input[data-key^="h-"], input[data-key^="a-"], input[data-key^="c-"], input[data-key^="$-"]');
     function save(){ var d={}; inps.forEach(function(i){d[i.getAttribute('data-key')]=i.value;}); localStorage.setItem(K,JSON.stringify(d)); tot(); }
-    function tot(){ var t=0; document.querySelectorAll('.lodging-table input[data-key^="$"]').forEach(function(i){ var n=parseFloat((i.value||'').replace(/[^0-9.]/g,'')); if(!isNaN(n))t+=n; }); document.getElementById('lodgeTotal').textContent='$'+t.toLocaleString(); }
+    function tot(){ var t=0; document.querySelectorAll('input[data-key^="$"]').forEach(function(i){ var n=parseFloat((i.value||'').replace(/[^0-9.]/g,'')); if(!isNaN(n))t+=n; }); var el=document.getElementById('lodgeTotal'); if(el) el.textContent='$'+t.toLocaleString(); var el2=document.getElementById('lodgeTotalMobile'); if(el2) el2.textContent='$'+t.toLocaleString(); }
     var d={}; try{d=JSON.parse(localStorage.getItem(K)||'{}');}catch(e){}
     inps.forEach(function(i){ var k=i.getAttribute('data-key'); if(d[k])i.value=d[k]; i.addEventListener('input',save); }); tot();
-    document.querySelectorAll('.dir-btn').forEach(function(b){ b.addEventListener('click',function(){ var i=document.querySelector('.lodging-table input[data-key="'+b.getAttribute('data-addr')+'"]'); var v=i?i.value.trim():''; if(!v){alert('Enter address first.');return;} window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(v),'_blank'); }); });
+    document.querySelectorAll('.dir-btn').forEach(function(b){ b.addEventListener('click',function(){ var i=document.querySelector('input[data-key="'+b.getAttribute('data-addr')+'"]'); var v=i?i.value.trim():''; if(!v){alert('Enter address first.');return;} window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(v),'_blank'); }); });
 })();
 
 // Trip log
