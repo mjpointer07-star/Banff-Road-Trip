@@ -1369,8 +1369,8 @@ function shareTrip(){
             grid.appendChild(cell);
             if(state[i]) found++;
         });
-        document.getElementById('bingoStatus').textContent = found+' / 25 spotted' + (checkBingo()?' — 🎉 BINGO!':'');
-        var inl = document.getElementById('bingoStatusInline'); if(inl) inl.textContent = found+'/25';
+        document.getElementById('bingoStatus').textContent = (found-1)+' / 24 spotted' + (checkBingo()?' — 🎉 BINGO!':'');
+        var inl = document.getElementById('bingoStatusInline'); if(inl) inl.textContent = (found-1)+'/24';
     }
     function checkBingo(){
         for(var r=0;r<5;r++){if(state[r*5]&&state[r*5+1]&&state[r*5+2]&&state[r*5+3]&&state[r*5+4]) return true;}
