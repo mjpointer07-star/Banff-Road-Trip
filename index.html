@@ -258,6 +258,32 @@
         .day-detail.day-done > summary { background: rgba(91,140,110,0.1); }
         /* Version stamp */
         .version-stamp { font-size: 0.7rem; color: var(--muted); text-align: center; padding: 6px; }
+        /* Loading screen */
+        .loader-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--pine); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 99999;
+            transition: opacity 0.4s ease;
+        }
+        .loader-screen.hide { opacity: 0; pointer-events: none; }
+        .loader-screen .loader-icon { font-size: 4rem; animation: loaderBounce 0.8s ease infinite alternate; }
+        .loader-screen .loader-text { color: #cdddd3; font-family: 'Inter', sans-serif; font-size: 0.9rem; margin-top: 12px; font-weight: 600; }
+        @keyframes loaderBounce { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        /* Trip Complete overlay */
+        .trip-complete-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(31,64,52,0.95); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 99998;
+            color: white; text-align: center; padding: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+        .trip-complete-overlay h2 { font-size: 2.2rem; margin-bottom: 10px; }
+        .trip-complete-overlay p { font-size: 1.1rem; opacity: 0.9; margin: 5px 0; }
+        .trip-complete-overlay .stats { display: flex; gap: 20px; margin: 25px 0; }
+        .trip-complete-overlay .stat { text-align: center; }
+        .trip-complete-overlay .stat .num { font-size: 2rem; font-weight: 800; }
+        .trip-complete-overlay .stat .lbl { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; }
+        .trip-complete-overlay .dismiss { margin-top: 20px; background: white; color: var(--pine); border: none; padding: 12px 28px; border-radius: 30px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; }
         .posttrip-card h3 { color: var(--gold); }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
         .stat-box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
@@ -267,6 +293,11 @@
     </style>
 </head>
 <body>
+
+<div class="loader-screen" id="loader">
+    <div class="loader-icon">🏔️</div>
+    <div class="loader-text">Pointer Family Trip</div>
+</div>
 
 <nav class="nav" id="top">
     <span class="nav-title">🏔️ Pointer Trip</span>
@@ -860,6 +891,40 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
     rD();rF();
 })();
 
+// Trip Complete celebration
+function showTripComplete(){
+    // Gather stats
+    var drv=[]; try{drv=JSON.parse(localStorage.getItem('ptr2-drv')||'[]');}catch(e){}
+    var fuel=[]; try{fuel=JSON.parse(localStorage.getItem('ptr2-fuel')||'[]');}catch(e){}
+    var bingo=[]; try{bingo=JSON.parse(localStorage.getItem('ptr2-bingo')||'[]');}catch(e){}
+    var totalMi=0; drv.forEach(function(e){totalMi+=parseFloat(String(e.m||0).replace(/[^0-9.]/g,''))||0;});
+    var totalFuel=0; fuel.forEach(function(e){totalFuel+=parseFloat(String(e.c||0).replace(/[^0-9.]/g,''))||0;});
+    var bingoCount=bingo.filter(function(b){return b;}).length;
+    // Create overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'trip-complete-overlay';
+    overlay.innerHTML = '<h2>🏔️ Trip Complete!</h2><p>The Pointer Family Rocky Mountain Loop 2026</p><p>10 days · 4 parks · 2 countries · 1 unforgettable adventure</p><div class="stats"><div class="stat"><div class="num">'+Math.round(totalMi).toLocaleString()+'</div><div class="lbl">Miles</div></div><div class="stat"><div class="num">$'+Math.round(totalFuel)+'</div><div class="lbl">Fuel</div></div><div class="stat"><div class="num">'+bingoCount+'/25</div><div class="lbl">Bingo</div></div></div><button class="dismiss" onclick="this.parentElement.remove()">Continue →</button>';
+    document.body.appendChild(overlay);
+    // Fire confetti behind it
+    if(navigator.vibrate) navigator.vibrate([100,80,100,80,200]);
+    var container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+    var colors = ['#c8932a','#5b8c6e','#2d6e8f','#b5651d','#e74c3c','#9b59b6','#f39c12','#ffffff'];
+    for(var i=0;i<100;i++){
+        var piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100+'%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDelay = Math.random()*1+'s';
+        piece.style.animationDuration = (2.5+Math.random()*2.5)+'s';
+        piece.style.width = (8+Math.random()*10)+'px';
+        piece.style.height = (8+Math.random()*10)+'px';
+        container.appendChild(piece);
+    }
+    setTimeout(function(){container.remove();},5000);
+}
+
 // Service Worker for offline support
 if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
@@ -906,10 +971,45 @@ if('serviceWorker' in navigator){
                         nextCard.open = true;
                         setTimeout(function(){ nextCard.scrollIntoView({behavior:'smooth', block:'start'}); }, 300);
                     }
+                } else {
+                    // Last day completed — show Trip Complete celebration!
+                    showTripComplete();
                 }
             }
         });
         body.appendChild(btn);
+    });
+})();
+
+// Loading screen — dismiss after 600ms
+(function(){
+    setTimeout(function(){
+        var loader = document.getElementById('loader');
+        if(loader){ loader.classList.add('hide'); setTimeout(function(){ loader.remove(); }, 400); }
+    }, 600);
+})();
+
+// Bottom nav active section highlighting
+(function(){
+    var sections = [
+        {id:'itinerary', link:'a[href="#itinerary"]'},
+        {id:'lodging', link:'a[href="#lodging"]'},
+        {id:'photos', link:'a[href="#photos"]'},
+        {id:'packing', link:'a[href="#packing"]'},
+        {id:'bingo', link:'a[href="#bingo"]'}
+    ];
+    var btmLinks = document.querySelectorAll('.bottom-nav a');
+    window.addEventListener('scroll', function(){
+        var current = '';
+        sections.forEach(function(s){
+            var el = document.getElementById(s.id);
+            if(el && el.getBoundingClientRect().top <= 150) current = s.id;
+        });
+        btmLinks.forEach(function(a){
+            a.classList.remove('active');
+            var href = a.getAttribute('href');
+            if(href === '#'+current || (href === '#itinerary' && !current)) a.classList.add('active');
+        });
     });
 })();
 
