@@ -284,6 +284,13 @@
         .trivia-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
         .trivia-q { font-size: 1.05rem; font-weight: 600; color: var(--ink); line-height: 1.5; }
         .trivia-a { font-size: 1rem; color: var(--sage); font-weight: 700; margin-top: 8px; padding: 10px; background: rgba(91,140,110,0.08); border-radius: 8px; }
+        .trivia-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+        .trivia-opt { padding: 10px 12px; border: 2px solid var(--line); border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 500; text-align: center; transition: all 0.2s; font-family: 'Inter', sans-serif; background: var(--card); }
+        .trivia-opt:hover { border-color: var(--sage); }
+        .trivia-opt.correct { background: rgba(91,140,110,0.2); border-color: var(--sage); color: var(--pine); }
+        .trivia-opt.wrong { background: rgba(180,86,79,0.1); border-color: #b4564f; color: #b4564f; }
+        .trivia-opt.disabled { pointer-events: none; opacity: 0.7; }
+        [data-theme="dark"] .trivia-opt { background: #2c3035; border-color: #4a4d52; color: #e8e6e2; }
         @media(max-width:768px){ .plate-grid { grid-template-columns: repeat(4, 1fr); } }
         /* Loading screen */
         .loader-screen {
@@ -743,9 +750,9 @@
     <tr><td>Canada parks</td><td><span class="free-badge">FREE</span></td></tr>
     <tr><td>Bus tour (×4)</td><td>~$204</td></tr>
     <tr><td>Columbia Icefield (×4, optional)</td><td>~$300</td></tr>
-    <tr><td>Lodging (9 nights)</td><td>~$1,800</td></tr>
+    <tr><td>Lodging (9 nights)</td><td>~$3,142</td></tr>
     <tr><td>Food (4 people × 10 days)</td><td>~$2,400</td></tr>
-    <tr style="background:rgba(91,140,110,0.12);font-weight:800;"><td><strong>TOTAL</strong></td><td><strong>~$5,634 (~$1,409/person)</strong></td></tr>
+    <tr style="background:rgba(91,140,110,0.12);font-weight:800;"><td><strong>TOTAL</strong></td><td><strong>~$6,976 (~$1,744/person)</strong></td></tr>
 </table>
 <div class="tip-box" style="font-size:0.82rem; margin-top:12px;">
     <strong>💡 Canada $$ tip:</strong> Prices in Canada are in CAD (~$0.73 USD). Things look ~30% more expensive than they are. Tipping is 15–20% same as the US.
@@ -779,7 +786,7 @@
     <p style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">Tap a square when you spot it. Get 5 in a row to win!</p>
     <div class="bingo-status" id="bingoStatus">0 / 25 spotted</div>
     <div class="bingo-grid" id="bingoGrid"></div>
-    <button class="mini-btn" style="margin-top:8px;" onclick="if(confirm('Reset bingo?')){localStorage.removeItem('ptr2-bingo');location.reload();}">Reset Board</button>
+    <button class="mini-btn" style="margin-top:8px;" onclick="window._resetBingo()">Reset & Shuffle Board</button>
 </div>
 </details>
 
@@ -796,18 +803,18 @@
 </details>
 
 <details class="day-detail" style="margin:14px 0;">
-<summary><strong>🧠 Road Trip Trivia</strong> — 30 Questions <span class="tag tag-drive">Read Aloud</span></summary>
+<summary><strong>🧠 Road Trip Trivia</strong> — 30 Questions <span class="tag tag-drive">Multiple Choice</span></summary>
 <div class="day-body">
-    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">One person reads — everyone shouts answers!</p>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">Tap your answer! Green = correct, red = wrong. Track your score!</p>
     <div id="triviaArea">
         <div class="trivia-card" id="triviaCard">
             <div class="trivia-q" id="triviaQ"></div>
-            <button class="mini-btn" id="triviaReveal" style="margin:10px 0;">Show Answer</button>
-            <div class="trivia-a" id="triviaA" style="display:none;"></div>
+            <div class="trivia-options" id="triviaOpts"></div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
             <button class="mini-btn" id="triviaPrev">← Prev</button>
             <button class="mini-btn" id="triviaNext" style="background:var(--sage);color:white;border-color:var(--sage);">Next →</button>
+            <span style="font-size:0.8rem;color:var(--muted);margin-left:auto;" id="triviaScore">0 correct</span>
         </div>
         <div style="font-size:0.78rem;color:var(--muted);margin-top:8px;" id="triviaProgress">1 / 30</div>
     </div>
@@ -918,11 +925,39 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
 
 // Lodging
 (function(){
-    var K='ptr2-lodge', inps=document.querySelectorAll('input[data-key^="h-"], input[data-key^="a-"], input[data-key^="c-"], input[data-key^="$-"]');
+    var K='ptr2-lodge';
+    var defaults = {
+        'h-gf': 'Super 8 by Wyndham Great Falls City Center',
+        'a-gf': '220b Central Ave. West, Great Falls, MT 59401',
+        '$-gf': '$142',
+        'h-gl': 'Circle R Motel',
+        'a-gl': '402 U.S. Highway 2 East, East Glacier Park, MT 59434',
+        '$-gl': '$494',
+        'h-bf': 'Banff Inn',
+        'a-bf': '501 Banff Avenue, T1L 1C9 Banff, Canada',
+        '$-bf': '$1,444',
+        'h-gd': 'Yellowstone Lodge',
+        'a-gd': '251 South Electric Avenue, West Yellowstone, MT 59758',
+        '$-gd': '$641',
+        'h-jk': 'Super 8 by Wyndham',
+        'a-jk': '750 South Highway 89, Jackson, WY 83001',
+        '$-jk': '$421'
+    };
+    var inps=document.querySelectorAll('input[data-key^="h-"], input[data-key^="a-"], input[data-key^="c-"], input[data-key^="$-"]');
     function save(){ var d={}; inps.forEach(function(i){d[i.getAttribute('data-key')]=i.value;}); localStorage.setItem(K,JSON.stringify(d)); tot(); }
     function tot(){ var t=0; document.querySelectorAll('input[data-key^="$"]').forEach(function(i){ var n=parseFloat((i.value||'').replace(/[^0-9.]/g,'')); if(!isNaN(n))t+=n; }); var el=document.getElementById('lodgeTotal'); if(el) el.textContent='$'+t.toLocaleString(); var el2=document.getElementById('lodgeTotalMobile'); if(el2) el2.textContent='$'+t.toLocaleString(); }
     var d={}; try{d=JSON.parse(localStorage.getItem(K)||'{}');}catch(e){}
-    inps.forEach(function(i){ var k=i.getAttribute('data-key'); if(d[k])i.value=d[k]; i.addEventListener('input',save); }); tot();
+    // If no saved data, use defaults
+    var hasData = Object.keys(d).length > 0;
+    inps.forEach(function(i){
+        var k=i.getAttribute('data-key');
+        if(hasData && d[k]) { i.value=d[k]; }
+        else if(!hasData && defaults[k]) { i.value=defaults[k]; }
+        i.addEventListener('input', save);
+    });
+    // Save defaults on first load
+    if(!hasData){ save(); }
+    tot();
     document.querySelectorAll('.dir-btn').forEach(function(b){ b.addEventListener('click',function(){ var i=document.querySelector('input[data-key="'+b.getAttribute('data-addr')+'"]'); var v=i?i.value.trim():''; if(!v){alert('Enter address first.');return;} window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(v),'_blank'); }); });
 })();
 
@@ -987,56 +1022,72 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
     updateCount();
 })();
 
-// Road Trip Trivia
+// Road Trip Trivia — Multiple Choice
 (function(){
     var QA = [
-        {q:"What year was Yellowstone established as the first national park?", a:"1872"},
-        {q:"How tall is the Lower Falls in the Grand Canyon of the Yellowstone?", a:"308 feet (twice Niagara Falls)"},
-        {q:"What year was Banff established as Canada's first national park?", a:"1885"},
-        {q:"How many glaciers remain in Glacier National Park (as of 2024)?", a:"About 26 (down from 150 in 1850)"},
-        {q:"How often does Old Faithful erupt?", a:"Every ~90 minutes (average 92 min)"},
-        {q:"What is the largest hot spring in North America?", a:"Grand Prismatic Spring (370 ft diameter)"},
-        {q:"How long did it take to build Going-to-the-Sun Road?", a:"11 years (1921-1932)"},
-        {q:"What elevation is Logan Pass at?", a:"6,646 feet (2,026 m)"},
-        {q:"What color is the water in Moraine Lake and why?", a:"Turquoise — from glacial rock flour (fine sediment)"},
-        {q:"How deep is Lake Louise?", a:"230 feet (70 m)"},
-        {q:"What is the 'Serengeti of North America' in Yellowstone?", a:"Lamar Valley"},
-        {q:"What Canadian program gives free park admission this summer?", a:"Canada Strong Pass (Jun 19–Sep 7, 2026)"},
-        {q:"What river forms the border between Glacier NP and the Flathead National Forest?", a:"Middle Fork of the Flathead River"},
-        {q:"How many thermal features does Yellowstone have?", a:"Over 10,000"},
-        {q:"What is the tallest peak in Grand Teton National Park?", a:"Grand Teton — 13,775 feet"},
-        {q:"What animal is most likely to cause a 'wildlife jam' in Yellowstone?", a:"Bison (they walk on the road)"},
-        {q:"What is the Icefields Parkway's official highway number?", a:"Highway 93 North"},
-        {q:"How many lakes does Glacier National Park have?", a:"762 (only 131 are named)"},
-        {q:"What Indigenous peoples historically used Head-Smashed-In Buffalo Jump?", a:"Blackfoot people (for over 6,000 years)"},
-        {q:"What happened at Frank Slide in 1903?", a:"110 million tonnes of rock buried part of the town"},
-        {q:"What is the elevation of Banff townsite?", a:"4,537 feet (1,383 m)"},
-        {q:"How long is the Icefields Parkway?", a:"232 km (144 miles)"},
-        {q:"What glacier feeds the Columbia Icefield?", a:"Athabasca Glacier"},
-        {q:"What state capital would you pass through driving I-25 N from Denver?", a:"Cheyenne, Wyoming"},
-        {q:"What is Montana's nickname?", a:"Big Sky Country"},
-        {q:"How many states does the Continental Divide pass through?", a:"5 (Montana, Idaho, Wyoming, Colorado, New Mexico)"},
-        {q:"What year did the Prince of Wales Hotel open in Waterton?", a:"1927"},
-        {q:"What is the approximate distance from Denver to Glacier NP?", a:"~1,000 miles"},
-        {q:"What two countries share Waterton-Glacier International Peace Park?", a:"USA and Canada"},
-        {q:"What is the average speed of an Old Faithful eruption?", a:"About 130 mph with water reaching 130-180 feet high"}
+        {q:"What year was Yellowstone established?", opts:["1862","1872","1885","1901"], ans:1},
+        {q:"How tall is the Lower Falls in Yellowstone?", opts:["152 ft","234 ft","308 ft","450 ft"], ans:2},
+        {q:"What year was Banff established as Canada's first national park?", opts:["1872","1885","1903","1910"], ans:1},
+        {q:"How many glaciers remain in Glacier NP (approx)?", opts:["About 26","About 80","About 150","About 200"], ans:0},
+        {q:"How often does Old Faithful erupt?", opts:["Every 30 min","Every 60 min","Every 90 min","Every 3 hrs"], ans:2},
+        {q:"What is the largest hot spring in North America?", opts:["Old Faithful","Mammoth Hot Springs","Grand Prismatic Spring","Morning Glory Pool"], ans:2},
+        {q:"How long did it take to build Going-to-the-Sun Road?", opts:["5 years","8 years","11 years","15 years"], ans:2},
+        {q:"What elevation is Logan Pass?", opts:["5,200 ft","6,646 ft","7,800 ft","8,500 ft"], ans:1},
+        {q:"Why is Moraine Lake turquoise?", opts:["Algae","Glacial rock flour","Mineral deposits","Reflection from sky"], ans:1},
+        {q:"How deep is Lake Louise?", opts:["80 ft","150 ft","230 ft","350 ft"], ans:2},
+        {q:"What valley in Yellowstone is called the 'Serengeti of North America'?", opts:["Hayden Valley","Pelican Valley","Lamar Valley","Madison Valley"], ans:2},
+        {q:"What gives free park admission in Canada this summer?", opts:["Discovery Pass","Canada Strong Pass","National Day Pass","Parks Free Pass"], ans:1},
+        {q:"How many thermal features does Yellowstone have?", opts:["Over 1,000","Over 5,000","Over 10,000","Over 25,000"], ans:2},
+        {q:"What is the tallest peak in Grand Teton NP?", opts:["Mt. Moran (12,605 ft)","Grand Teton (13,775 ft)","Mt. Owen (12,928 ft)","Teewinot (12,325 ft)"], ans:1},
+        {q:"What animal causes 'wildlife jams' in Yellowstone?", opts:["Elk","Bears","Bison","Wolves"], ans:2},
+        {q:"How many lakes does Glacier NP have?", opts:["200","450","762","1,000+"], ans:2},
+        {q:"What happened at Frank Slide in 1903?", opts:["Avalanche","Forest fire","Rock slide buried a town","Flood"], ans:2},
+        {q:"How long is the Icefields Parkway?", opts:["100 km","175 km","232 km","310 km"], ans:2},
+        {q:"What glacier feeds the Columbia Icefield?", opts:["Victoria Glacier","Athabasca Glacier","Grinnell Glacier","Bow Glacier"], ans:1},
+        {q:"What is Montana's nickname?", opts:["Treasure State","Big Sky Country","Mountain State","Wild West"], ans:1},
+        {q:"What year did the Prince of Wales Hotel open?", opts:["1910","1920","1927","1935"], ans:2},
+        {q:"Two countries share Waterton-Glacier Peace Park. Which?", opts:["USA & Mexico","USA & Canada","Canada & UK","USA & France"], ans:1},
+        {q:"What is the approximate driving distance Denver to Glacier?", opts:["~600 mi","~800 mi","~1,000 mi","~1,200 mi"], ans:2},
+        {q:"The Blackfoot people used Head-Smashed-In for how many years?", opts:["500 years","2,000 years","6,000 years","10,000 years"], ans:2},
+        {q:"What's the elevation of Banff townsite?", opts:["3,200 ft","4,537 ft","5,800 ft","6,200 ft"], ans:1},
+        {q:"Grand Prismatic Spring is how wide?", opts:["150 ft","250 ft","370 ft","500 ft"], ans:2},
+        {q:"Mountain goats can climb at what angle?", opts:["45 degrees","60 degrees","Nearly vertical","Completely vertical"], ans:2},
+        {q:"Jackson Hole's famous town square features arches made of what?", opts:["Wood","Elk antlers","Bison horns","Stone"], ans:1},
+        {q:"Glacier NP requires vehicle reservations in 2026. True or false?", opts:["True","False — dropped for 2026","Only on weekends","Only in July"], ans:1},
+        {q:"How many hours of daylight in late June at these latitudes?", opts:["12 hours","14 hours","16 hours","18 hours"], ans:2}
     ];
-    var idx = 0;
+    var idx = 0, score = 0, answered = [];
     var qEl = document.getElementById('triviaQ');
-    var aEl = document.getElementById('triviaA');
-    var revBtn = document.getElementById('triviaReveal');
+    var optsEl = document.getElementById('triviaOpts');
     var prog = document.getElementById('triviaProgress');
+    var scoreEl = document.getElementById('triviaScore');
     function show(){
         if(!qEl) return;
         qEl.textContent = QA[idx].q;
-        aEl.textContent = QA[idx].a;
-        aEl.style.display = 'none';
-        revBtn.style.display = 'inline-block';
+        optsEl.innerHTML = '';
+        QA[idx].opts.forEach(function(opt, i){
+            var btn = document.createElement('div');
+            btn.className = 'trivia-opt';
+            btn.textContent = opt;
+            if(answered[idx] !== undefined){
+                btn.classList.add('disabled');
+                if(i === QA[idx].ans) btn.classList.add('correct');
+                if(answered[idx] === i && i !== QA[idx].ans) btn.classList.add('wrong');
+            } else {
+                btn.addEventListener('click', function(){
+                    answered[idx] = i;
+                    if(i === QA[idx].ans){ score++; if(navigator.vibrate) navigator.vibrate(30); }
+                    else { if(navigator.vibrate) navigator.vibrate([50,30,50]); }
+                    show();
+                    scoreEl.textContent = score + ' correct';
+                });
+            }
+            optsEl.appendChild(btn);
+        });
         prog.textContent = (idx+1)+' / '+QA.length;
     }
-    if(revBtn) revBtn.addEventListener('click', function(){ aEl.style.display='block'; revBtn.style.display='none'; });
-    var prevBtn = document.getElementById('triviaPrev');
     var nextBtn = document.getElementById('triviaNext');
+    var prevBtn = document.getElementById('triviaPrev');
     if(nextBtn) nextBtn.addEventListener('click', function(){ idx = (idx+1) % QA.length; show(); });
     if(prevBtn) prevBtn.addEventListener('click', function(){ idx = (idx-1+QA.length) % QA.length; show(); });
     show();
@@ -1214,16 +1265,35 @@ if('serviceWorker' in navigator){
     }
 })();
 
-// Bingo Board with confetti + haptics
+// Bingo Board with confetti + haptics + shuffle
 (function(){
-    var ITEMS = [
+    var ITEMS_BASE = [
         {e:'🦬',t:'Bison'},{e:'🦅',t:'Bald Eagle'},{e:'🫎',t:'Moose'},{e:'🐐',t:'Mtn Goat'},{e:'🐻',t:'Bear'},
         {e:'🦌',t:'Elk'},{e:'💧',t:'Waterfall'},{e:'💎',t:'Turquoise Lake'},{e:'❄️',t:'Snow in June'},{e:'🐿️',t:'Chipmunk'},
-        {e:'🚗',t:'Wildlife Jam'},{e:'🌈',t:'Rainbow'},{e:'⭐',t:'FREE',free:true},{e:'🌅',t:'Sunset Photo'},{e:'🦌',t:'Deer'},
+        {e:'🚗',t:'Wildlife Jam'},{e:'🌈',t:'Rainbow'},
+        {e:'🌅',t:'Sunset Photo'},{e:'🦌',t:'Deer'},
         {e:'🧊',t:'Glacier/Ice'},{e:'🌸',t:'Wildflowers'},{e:'🦅',t:'Osprey/Hawk'},{e:'🐺',t:'Wolf'},{e:'🐏',t:'Bighorn Sheep'},
         {e:'♨️',t:'Hot Spring'},{e:'🐺',t:'Coyote'},{e:'🦫',t:'Marmot'},{e:'🫎',t:'Pronghorn'},{e:'🌌',t:'Starry Night'}
     ];
+    var LAYOUT_KEY = 'ptr2-bingo-layout';
     var KEY = 'ptr2-bingo';
+
+    function shuffle(arr){
+        var a = arr.slice();
+        for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+        return a;
+    }
+    function getLayout(){
+        var saved = localStorage.getItem(LAYOUT_KEY);
+        if(saved){ try{ return JSON.parse(saved); }catch(e){} }
+        var shuffled = shuffle(ITEMS_BASE);
+        // Insert FREE in center (position 12)
+        shuffled.splice(12, 0, {e:'⭐',t:'FREE',free:true});
+        localStorage.setItem(LAYOUT_KEY, JSON.stringify(shuffled));
+        return shuffled;
+    }
+    var ITEMS = getLayout();
+
     var state = []; try{state=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}
     if(state.length!==25) state = ITEMS.map(function(item){return item.free||false;});
     var hadBingo = checkBingo();
@@ -1243,7 +1313,6 @@ if('serviceWorker' in navigator){
                     if(state[i]){
                         cell.classList.add('just-found');
                         setTimeout(function(){cell.classList.remove('just-found');},300);
-                        // Haptic feedback
                         if(navigator.vibrate) navigator.vibrate(30);
                     }
                     render();
@@ -1256,6 +1325,7 @@ if('serviceWorker' in navigator){
             if(state[i]) found++;
         });
         document.getElementById('bingoStatus').textContent = found+' / 25 spotted' + (checkBingo()?' — 🎉 BINGO!':'');
+        var inl = document.getElementById('bingoStatusInline'); if(inl) inl.textContent = found+'/25';
     }
     function checkBingo(){
         for(var r=0;r<5;r++){if(state[r*5]&&state[r*5+1]&&state[r*5+2]&&state[r*5+3]&&state[r*5+4]) return true;}
@@ -1284,6 +1354,14 @@ if('serviceWorker' in navigator){
         setTimeout(function(){container.remove();},4000);
     }
     render();
+
+    // Override reset to also shuffle layout
+    window._resetBingo = function(){
+        if(!confirm('Reset bingo? Board will shuffle to a new layout!')) return;
+        localStorage.removeItem(KEY);
+        localStorage.removeItem(LAYOUT_KEY);
+        location.reload();
+    };
 })();
 </script>
 </body>
