@@ -221,6 +221,11 @@
         @media(max-width:768px){ .bingo-grid { max-width: 100%; gap: 2px; padding: 0; margin: 14px 8px; box-sizing: border-box; } .bingo-cell { font-size: 0.52rem; padding: 2px; border-width: 1.5px; border-radius: 8px; } .bingo-cell .emoji { font-size: 0.95rem; } .photos-grid { grid-template-columns: 1fr !important; } }
         /* POST-TRIP SUMMARY */
         .posttrip-card { background: linear-gradient(135deg, rgba(200,147,42,0.1), rgba(212,149,106,0.1)); border: 2px solid var(--gold); border-radius: var(--radius); padding: 24px; text-align: center; margin: 20px 0; }
+        /* DAILY NOTE */
+        .day-note { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+        .day-note input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; font-family: inherit; background: var(--stone); }
+        .day-note input:focus { outline: none; border-color: var(--sage); }
+        .day-note label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 4px; }
         .posttrip-card h3 { color: var(--gold); }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
         .stat-box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
@@ -279,6 +284,7 @@
         <li><b>Going-to-the-Sun Road won't be fully open over Logan Pass</b> (projected ~July 1). East side is fully open — Many Glacier, Two Medicine, St. Mary are the best scenery. No vehicle reservations needed in 2026.</li>
         <li><b>Lake Louise & Moraine Lake covered by your June 23 bus tour.</b> No separate shuttle to book — the tour handles access.</li>
         <li><b>Passports for everyone.</b> Chief Mountain border: 7am–10pm in June.</li>
+        <li><b>☀️ Daylight:</b> Sunrise ~5:30am, sunset ~9:30pm at all locations. 16 hrs of light — start hikes early, enjoy long evenings.</li>
     </ul>
 </div>
 
@@ -651,6 +657,9 @@
     <tr><td>Food (4 people × 10 days)</td><td>~$2,400</td></tr>
     <tr style="background:rgba(91,140,110,0.12);font-weight:800;"><td><strong>TOTAL</strong></td><td><strong>~$5,634 (~$1,409/person)</strong></td></tr>
 </table>
+<div class="tip-box" style="font-size:0.82rem; margin-top:12px;">
+    <strong>💡 Canada $$ tip:</strong> Prices in Canada are in CAD (~$0.73 USD). Things look ~30% more expensive than they are. Tipping is 15–20% same as the US.
+</div>
 
 <hr class="divider">
 
@@ -807,6 +816,25 @@ window.addEventListener('scroll', function(){ document.getElementById('backToTop
 if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
+
+// Daily micro-journal notes
+(function(){
+    var days = ['june19','june20','june21','june22','june23','june24','june25','june26','june27','june28'];
+    days.forEach(function(id){
+        var detail = document.getElementById(id);
+        if(!detail) return;
+        var body = detail.querySelector('.day-body');
+        if(!body) return;
+        var div = document.createElement('div');
+        div.className = 'day-note';
+        div.innerHTML = '<label>✏️ Highlight of the day</label><input type="text" placeholder="Best moment, funny quote, favorite spot…" data-note="'+id+'">';
+        body.appendChild(div);
+        var inp = div.querySelector('input');
+        var saved = localStorage.getItem('ptr2-note-'+id);
+        if(saved) inp.value = saved;
+        inp.addEventListener('input', function(){ localStorage.setItem('ptr2-note-'+id, inp.value); });
+    });
+})();
 
 // Location-based theme + auto-scroll to today
 (function(){

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pointer-trip-v2';
+const CACHE_NAME = 'pointer-trip-v3';
 const ASSETS = [
     './',
     './index.html',
