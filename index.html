@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorado to Banff Road Trip — June 19–28, 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #2d3748;
+            background: #f7fafc;
+        }
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            background: rgba(26, 54, 93, 0.97);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .nav a {
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            display: inline-block;
+            margin: 2px 0;
+        }
+        .nav a:hover { background: #2d6a4f; color: white; }
+        .nav a.active { background: #2d6a4f; color: white; }
+        .nav-label {
+            color: #a0aec0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 8px;
+            display: inline-block;
+        }
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d6a4f;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 999;
+        }
+        .back-to-top.visible { opacity: 1; }
+        .back-to-top:hover { background: #1a365d; }
+        .hero {
+            background: linear-gradient(rgba(26, 54, 93, 0.55), rgba(45, 106, 79, 0.6)), url('images/Pointers road trip loop.jpg');
+            background-size: cover;
+            background-position: center top;
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 12px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.25rem; opacity: 0.95; margin-top: 6px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .overview-section {
+            background: white;
+            padding: 40px 30px;
+            margin: -40px auto 0;
+            max-width: 1100px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        h2 {
+            font-size: 1.9rem;
+            color: #1a365d;
+            margin: 60px 0 25px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #2d6a4f;
+            scroll-margin-top: 60px;
+        }
+        h3 { font-size: 1.35rem; color: #2d6a4f; margin: 25px 0 12px; scroll-margin-top: 60px; }
+        h4 { margin: 18px 0 10px; color: #4a5568; font-size: 1.05rem; }
+        p, li { margin-bottom: 8px; }
+        ul { padding-left: 20px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95rem; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #1a365d; color: white; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.3px; }
+        tr:nth-child(even) { background: #edf2f7; }
+        tr.reserved { background: #c6f6d5 !important; font-weight: bold; }
+        .day-card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-left: 5px solid #2d6a4f;
+            scroll-margin-top: 60px;
+        }
+        .day-card.highlight {
+            border-left: 5px solid #d69e2e;
+            background: #fffff0;
+        }
+        .day-card h3 { margin-top: 0; }
+        .photo {
+            width: 100%;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: block;
+        }
+        .photo-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .photo-row img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .tip-box {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid #d69e2e;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        .free-badge {
+            display: inline-block;
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .stay-badge {
+            display: inline-block;
+            background: #e9d8fd;
+            color: #44337a;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .checklist { list-style: none; padding-left: 0; }
+        .checklist li { padding: 5px 0; }
+        .checklist li::before { content: "☐ "; font-size: 1.1rem; }
+        .divider {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #2d6a4f, transparent);
+            margin: 60px 0;
+        }
+        a { color: #2b6cb0; }
+        details {
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        details summary {
+            padding: 12px 16px;
+            background: #edf2f7;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2d6a4f;
+            user-select: none;
+        }
+        details summary:hover { background: #e2e8f0; }
+        details[open] summary { border-bottom: 1px solid #e2e8f0; }
+        details .map-content {
+            padding: 15px;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #718096;
+            font-style: italic;
+        }
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.9rem; }
+            .hero { padding: 60px 15px; }
+            .photo-row { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            .day-card { padding: 20px; }
+            .overview-section { margin-top: -20px; padding: 25px 18px; border-radius: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav" id="top">
+    <span class="nav-label">Jump to:</span>
+    <a href="#overview">Overview</a>
+    <a href="#june19">Jun 19</a>
+    <a href="#june20">Jun 20</a>
+    <a href="#june21">Jun 21</a>
+    <a href="#june22">Jun 22</a>
+    <a href="#june23">Jun 23 ✅</a>
+    <a href="#june24">Jun 24</a>
+    <a href="#june25">Jun 25</a>
+    <a href="#june26">Jun 26</a>
+    <a href="#june27">Jun 27</a>
+    <a href="#june28">Jun 28</a>
+    <a href="#photos">Photos</a>
+    <a href="#journal">Journal</a>
+    <a href="#packing">Packing</a>
+    <a href="#reservations">Booking</a>
+    <a href="#budget">Budget</a>
+    <a href="#links">Links</a>
+</nav>
+
+<a href="#top" class="back-to-top" id="backToTop">↑</a>
+
+<div class="hero">
+    <h1>🏔️ Colorado to Banff Road Trip</h1>
+    <p>June 19–28, 2026</p>
+    <p>Glacier NP → Waterton → Banff → Yellowstone</p>
+    <p>The Pointer Family · 10 Days · 4 National Parks</p>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════ -->
+<div class="overview-section" id="overview">
+<h2 style="margin-top:0; border-bottom:3px solid #2d6a4f;">📅 Trip Overview</h2>
+
+<table>
+    <tr><th>Date</th><th>Plan</th><th>Staying In</th></tr>
+    <tr><td>June 19</td><td>Drive: Colorado → Great Falls, MT</td><td>Great Falls, MT</td></tr>
+    <tr><td>June 20</td><td>Drive to Glacier NP, explore all day</td><td>Glacier NP area</td></tr>
+    <tr><td>June 21</td><td>Full day at Glacier National Park</td><td>Glacier NP area</td></tr>
+    <tr><td>June 22</td><td>Glacier → Waterton Lakes → Banff</td><td>Banff</td></tr>
+    <tr class="reserved"><td>June 23</td><td>✅ RESERVED — Lake Louise, Moraine Lake & Castle Mountain tour</td><td>Banff</td></tr>
+    <tr><td>June 24</td><td>Banff — Icefields Parkway / activities</td><td>Banff</td></tr>
+    <tr><td>June 25</td><td>Banff morning → Drive to West Yellowstone</td><td>West Yellowstone, MT</td></tr>
+    <tr><td>June 26</td><td>Yellowstone — Full day</td><td>West Yellowstone, MT</td></tr>
+    <tr><td>June 27</td><td>Yellowstone — Full day</td><td>West Yellowstone, MT</td></tr>
+    <tr><td>June 28</td><td>Yellowstone morning → Drive home to Colorado</td><td>HOME 🏠</td></tr>
+</table>
+
+<details>
+    <summary>🗺️ View Full Trip Mileage Breakdown (~3,150 miles total)</summary>
+    <div class="map-content">
+        <table>
+            <tr><th>Segment</th><th>Miles</th><th>Drive Time</th></tr>
+            <tr><td>Denver, CO → Great Falls, MT</td><td>~785 mi</td><td>~11 hrs</td></tr>
+            <tr><td>Great Falls → Glacier NP</td><td>~194 mi</td><td>~3.5 hrs</td></tr>
+            <tr><td>Glacier NP internal driving</td><td>~150 mi</td><td>over 2 days</td></tr>
+            <tr><td>Glacier → Waterton → Banff</td><td>~270 mi</td><td>~5 hrs</td></tr>
+            <tr><td>Banff area driving</td><td>~300 mi</td><td>over 3 days</td></tr>
+            <tr><td>Banff → West Yellowstone</td><td>~650 mi</td><td>~9 hrs</td></tr>
+            <tr><td>Yellowstone internal driving</td><td>~250 mi</td><td>over 3 days</td></tr>
+            <tr><td>West Yellowstone → Jackson → Denver</td><td>~550 mi</td><td>~8 hrs</td></tr>
+            <tr style="background:#c6f6d5; font-weight:bold;"><td><strong>TOTAL</strong></td><td><strong>~3,150 mi</strong></td><td><strong>~50 hrs</strong></td></tr>
+        </table>
+        <p style="margin-top:10px;"><a href="https://www.google.com/maps/dir/Denver,+CO/Great+Falls,+MT/West+Glacier,+MT/Waterton+Park,+AB/Banff,+AB/West+Yellowstone,+MT/Jackson,+WY/Denver,+CO" target="_blank" style="display:inline-block; background:#2d6a4f; color:white; padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:bold;">🗺️ Open Full Loop in Google Maps</a></p>
+    </div>
+</details>
+</div><!-- end overview-section -->
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june19">🚗 June 19 — Drive to Great Falls, Montana</h2>
+
+<img class="photo" src="images/Wyoming- Montana Drive.jpg" alt="Wyoming/Montana highway">
+
+<div class="day-card">
+    <h3>Colorado → Great Falls, MT (~10–11 hours)</h3>
+    <p><strong>Route:</strong> I-25 N through Wyoming → I-90 W → I-15 N → Great Falls, MT</p>
+
+    <div class="tip-box">
+        <strong>💡 Drive tips:</strong>
+        <ul>
+            <li>4 drivers — rotate every 2.5–3 hours</li>
+            <li>Fill up gas in Wyoming (long stretches between stations)</li>
+            <li>Pack food/snacks for the road</li>
+            <li>Download podcasts & playlists — cell service gets spotty in Montana</li>
+        </ul>
+    </div>
+
+    <p><span class="stay-badge">🏨 Overnight: Great Falls, MT</span></p>
+
+    <details>
+        <summary>🗺️ View Route Map — Colorado → Great Falls (~785 mi)</summary>
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d5765498.927!2d-109.5!3d43.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x876b80aa231f17cf%3A0x118ef4f8278a36d6!2sDenver%2C+CO!3m2!1d39.7392358!2d-104.990251!4m5!1s0x5341699677cb62a1%3A0x6e1dff4eb5bae2c6!2sGreat+Falls%2C+MT!3m2!1d47.5002354!2d-111.3008083!5e0!3m2!1sen!2sus!4v1" width="100%" height="300" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+            <p><a href="https://www.google.com/maps/dir/Denver,+CO/Great+Falls,+MT" target="_blank">📍 Open full directions in Google Maps</a></p>
+        </div>
+    </details>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june20">⛰️ June 20 — Arrive at Glacier NP & Explore</h2>
+
+<div class="day-card">
+    <h3>Great Falls → Glacier NP (~2.5 hrs) + Full Day Exploring</h3>
+
+    <img class="photo" src="images/Going-to-the-Sun-Road_Glacier-National-Park.jpeg" alt="Going-to-the-Sun Road">
+
+    <p><strong>Drive from Great Falls to Glacier's West Entrance:</strong> ~2.5 hours. Arrive by mid-morning if you leave early.</p>
+
+    <h4>Must-Do Today: Going-to-the-Sun Road</h4>
+    <ul>
+        <li>Drive <strong>Going-to-the-Sun Road</strong> — 50 miles of jaw-dropping mountain scenery</li>
+        <li><strong>Logan Pass</strong> (6,646 ft) — Hike <strong>Hidden Lake Overlook</strong> (3mi RT, boardwalk, mountain goats)</li>
+        <li>Stop at pullouts for Bird Woman Falls & Weeping Wall</li>
+    </ul>
+
+    <div class="photo-row">
+        <img src="images/Hidden Lake.webp" alt="Hidden Lake">
+        <img src="images/Mountain goats in logan pass.webp" alt="Mountain goats at Logan Pass">
+    </div>
+
+    <h4>Afternoon</h4>
+    <ul>
+        <li><strong>Trail of the Cedars</strong> — Short boardwalk through ancient cedar forest</li>
+        <li><strong>Avalanche Lake</strong> (4.5mi RT, moderate) — Glacier-fed lake surrounded by waterfalls</li>
+    </ul>
+
+    <img class="photo" src="images/avalanche-lake.jpg" alt="Avalanche Lake">
+
+    <h4>Evening</h4>
+    <ul>
+        <li>Dinner in West Glacier or Apgar Village</li>
+        <li>Sunset at <strong>Lake McDonald</strong> — mirror-calm water, colorful rocks on the shore</li>
+    </ul>
+
+    <img class="photo" src="images/glacier-national-park-lake-mcdonald-sunset.jpg" alt="Lake McDonald sunset">
+
+    <p><span class="stay-badge">🏨 Overnight: Glacier NP area (West Glacier / Apgar)</span></p>
+
+    <details>
+        <summary>🗺️ View Route Map — Great Falls → Glacier NP (~194 mi)</summary>
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d1200000!2d-113!3d48!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x5341699677cb62a1%3A0x6e1dff4eb5bae2c6!2sGreat+Falls%2C+MT!3m2!1d47.5002354!2d-111.3008083!4m5!1s0x5368901555555555%3A0xaf16bc2215c55dec!2sWest+Glacier%2C+MT!3m2!1d48.4949568!2d-113.981!5e0!3m2!1sen!2sus!4v1" width="100%" height="300" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+            <p><a href="https://www.google.com/maps/dir/Great+Falls,+MT/West+Glacier,+MT" target="_blank">📍 Open full directions in Google Maps</a></p>
+        </div>
+    </details>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june21">⛰️ June 21 — Full Day at Glacier National Park</h2>
+
+<div class="day-card">
+    <h3>Many Glacier — The "Switzerland of North America"</h3>
+
+    <img class="photo" src="images/Many Glacier.jpg" alt="Many Glacier">
+
+    <h4>Morning (start early — 7am)</h4>
+    <ul>
+        <li>Drive to <strong>Many Glacier</strong> area (~1.5 hrs from West Glacier)</li>
+        <li>Hike <strong>Grinnell Glacier</strong> (10.6mi RT, strenuous) — Turquoise lakes, active glacier, wildflowers</li>
+        <li><em>Shorter option:</em> <strong>Iceberg Lake</strong> (9.6mi RT, moderate) — Icebergs floating in the lake even in summer</li>
+        <li><em>Easy option:</em> <strong>Redrock Falls</strong> (3.6mi RT)</li>
+    </ul>
+
+    <h4>Afternoon</h4>
+    <ul>
+        <li><strong>Boat tour on Swiftcurrent Lake & Lake Josephine</strong> (~1.5 hrs, scenic, narrated)</li>
+        <li>Watch for grizzlies, moose, mountain goats — this is prime wildlife territory</li>
+    </ul>
+
+    <h4>Alternative: East Side of Going-to-the-Sun Road</h4>
+    <ul>
+        <li><strong>St. Mary Falls + Virginia Falls</strong> (3.6mi RT) — Two beautiful waterfalls</li>
+        <li><strong>Sun Point</strong> — Easy lakeside walk with mountain views</li>
+        <li><strong>Highline Trail</strong> from Logan Pass (11.8mi point-to-point) — Cliff-edge trail along the Continental Divide</li>
+    </ul>
+
+    <p><span class="stay-badge">🏨 Overnight: Glacier NP area</span></p>
+</div>
+
+<div class="tip-box">
+    <strong>Glacier NP — Key Info:</strong>
+    <ul>
+        <li><strong>NO vehicle reservation required in 2026</strong> — just drive in!</li>
+        <li>Entrance: $35/vehicle (7-day) or America the Beautiful Pass ($80/year)</li>
+        <li>No Logan Pass parking time limit before July 1</li>
+        <li>Bring microspikes for snowy high-elevation trails</li>
+        <li>Going-to-the-Sun Road typically fully opens June 16–25. Check: nps.gov/glac/planyourvisit/roadstatus.htm</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june22">🛣️ June 22 — Glacier → Waterton → Banff</h2>
+
+<div class="day-card">
+    <h3>Morning: Waterton Lakes National Park</h3>
+
+    <img class="photo" src="images/Waterton Lake.jpg" alt="Waterton Lakes">
+
+    <p>Cross the border at <strong>Chief Mountain</strong> (seasonal, confirm open) or <strong>Carway/Piegan</strong>. Waterton is right across — Glacier's Canadian sister park.</p>
+
+    <ul>
+        <li><strong>Cameron Falls</strong> — 2-minute walk from town, vivid blue-green water</li>
+        <li><strong>Red Rock Canyon</strong> — Beautiful red rock gorge, easy walking trails</li>
+        <li><strong>Prince of Wales Hotel viewpoint</strong> — Iconic hilltop vista over the lake</li>
+        <li><strong>Waterton Shoreline Cruise</strong> — Boat ride down Upper Waterton Lake</li>
+        <li>Grab lunch in Waterton townsite</li>
+    </ul>
+
+    <img class="photo" src="images/Red Rock Canyon Waterton.webp" alt="Red Rock Canyon, Waterton">
+    <p><span class="free-badge">FREE ADMISSION</span> starting June 19, 2026</p>
+</div>
+
+<div class="day-card">
+    <h3>Afternoon Drive: Waterton → Banff (~3–4 hrs)</h3>
+
+    <h4>Stops Along the Way (optional):</h4>
+    <ul>
+        <li><strong>Head-Smashed-In Buffalo Jump</strong> (UNESCO) — Indigenous bison jump site, excellent interpretive centre (1–2 hrs)</li>
+        <li><strong>Frank Slide</strong> (Crowsnest Pass) — 1903 rockslide that buried a town, eerie debris field (1 hr)</li>
+    </ul>
+
+    <p>Arrive in Banff/Canmore by evening. Settle in, grab dinner.</p>
+    <p><span class="stay-badge">🏨 Overnight: Banff</span></p>
+
+    <details>
+        <summary>🗺️ View Route Map — Glacier → Waterton → Banff (~270 mi)</summary>
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m34!1m12!1m3!1d2000000!2d-114.5!3d49.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m19!3e0!4m5!1s0x5368901555555555%3A0xaf16bc2215c55dec!2sEast+Glacier+Park%2C+MT!3m2!1d48.4465!2d-113.2218!4m5!1s0x536e838e6473a5c7%3A0x39c8d1396c5bed04!2sWaterton+Park%2C+AB!3m2!1d49.0509!2d-113.9116!4m5!1s0x5370ca45910c4afd%3A0xcaafaebfd0234bea!2sBanff%2C+AB!3m2!1d51.1784!2d-115.5708!5e0!3m2!1sen!2sus!4v1" width="100%" height="300" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+            <p><a href="https://www.google.com/maps/dir/East+Glacier+Park,+MT/Waterton+Park,+AB/Banff,+AB" target="_blank">📍 Open full directions in Google Maps</a></p>
+        </div>
+    </details>
+</div>
+
+<div class="warning-box">
+    <strong>⚠️ Border Crossing Tips:</strong>
+    <ul>
+        <li>Have passports ready</li>
+        <li>Declare all food, alcohol, and outdoor gear</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june23">🍁 June 23–25 — Banff & Area</h2>
+<p><span class="free-badge">FREE PARKS CANADA ADMISSION</span> June 19 – Sept 7, 2026</p>
+
+<div class="day-card highlight">
+    <h3>June 23 — ✅ RESERVED: Lake Louise, Moraine Lake & Castle Mountain Shuttle Tour</h3>
+
+    <img class="photo" src="images/Moraine-Lake-1-2048x1365.jpeg" alt="Moraine Lake">
+
+    <h4>Early Morning</h4>
+    <ul>
+        <li>Catch shuttle (earliest departure for best light — before 10am)</li>
+        <li><strong>Moraine Lake</strong> — Rockpile Trail for the classic viewpoint, walk the lakeshore</li>
+        <li>Take connector shuttle to Lake Louise</li>
+    </ul>
+
+    <div class="photo-row">
+        <img src="images/lake-louise.jpg" alt="Lake Louise">
+        <img src="images/Castle mountain.jpg" alt="Castle Mountain">
+    </div>
+
+    <h4>Late Morning / Afternoon</h4>
+    <ul>
+        <li><strong>Lake Louise</strong> — Walk to back of lake (Victoria Glacier views)</li>
+        <li>Optional: Hike to Lake Agnes Tea House (7km RT) or canoe on the lake</li>
+        <li><strong>Castle Mountain</strong> drive-by on Bow Valley Parkway (Hwy 1A)</li>
+    </ul>
+
+    <div class="tip-box">
+        <strong>📸 Photography tip:</strong> Morning light is best — clouds build after 2pm. Get your shots of both lakes early!
+    </div>
+
+    <p><span class="stay-badge">🏨 Overnight: Banff</span></p>
+</div>
+
+<div class="day-card" id="june24">
+    <h3>June 24 — Banff Day (Icefields Parkway or Town Activities)</h3>
+
+    <img class="photo" src="images/Icefields parkway.jpg" alt="Icefields Parkway">
+
+    <h4>Option A: Icefields Parkway Day Trip (Recommended)</h4>
+    <p>Highway 93N — one of the most beautiful drives in the world. 230km of glaciers, turquoise lakes, waterfalls.</p>
+    <ul>
+        <li><strong>Bow Lake</strong> — Turquoise lake right off the highway</li>
+        <li><strong>Peyto Lake</strong> — Wolf-head-shaped lake, impossibly blue</li>
+        <li><strong>Mistaya Canyon</strong> — Narrow slot canyon with churning water</li>
+        <li><strong>Columbia Icefield</strong> — Ice Explorer Tour onto the glacier + Glacier Skywalk</li>
+    </ul>
+
+    <img class="photo" src="images/Bow lake.jpg" alt="Bow Lake">
+
+    <h4>Option B: Banff Town Day</h4>
+    <ul>
+        <li><strong>Banff Gondola</strong> up Sulphur Mountain — 360° panoramic views</li>
+        <li><strong>Bow Falls</strong> — Easy walk from downtown</li>
+        <li><strong>Banff Upper Hot Springs</strong> — Soak with mountain views</li>
+        <li><strong>Johnston Canyon</strong> — Lower Falls, Upper Falls, Ink Pots</li>
+    </ul>
+
+    <img class="photo" src="images/johnston-canyon-trail falls.jpg" alt="Johnston Canyon Falls">
+
+    <div class="photo-row">
+        <img src="images/sulphur_mountain_gondola_banff.jpg" alt="Banff Gondola">
+        <img src="images/Bow Falls in Banff.jpg" alt="Bow Falls">
+    </div>
+
+    <h4>Option C: Adventure Day</h4>
+    <ul>
+        <li><strong>Kicking Horse River rafting</strong> — Class III–IV rapids (half day)</li>
+        <li><strong>Kananaskis — Grassi Lakes</strong> (4km RT) — Turquoise pools, cliff views</li>
+        <li><strong>Lake Minnewanka boat cruise</strong> + Two Jack Lake</li>
+        <li><strong>Legacy Trail</strong> — Bike between Banff and Canmore (22km, flat)</li>
+    </ul>
+
+    <p><span class="stay-badge">🏨 Overnight: Banff</span></p>
+</div>
+
+<div class="day-card" id="june25">
+    <h3>June 25 — Banff Morning → Drive to West Yellowstone</h3>
+
+    <h4>Morning in Banff (pick one before you leave):</h4>
+    <ul>
+        <li><strong>Johnston Canyon</strong> — Lower Falls + Upper Falls (2.7km, ~1.5 hrs). Do this if you didn't on June 24.</li>
+        <li><strong>Banff Gondola</strong> — If you haven't done it yet</li>
+        <li><strong>Vermilion Lakes</strong> — Quick canoe/kayak paddle, Mt. Rundle views</li>
+        <li><strong>Banff Upper Hot Springs</strong> — Relaxing soak before a long drive</li>
+        <li>Browse Banff Avenue shops, grab a coffee</li>
+    </ul>
+
+    <h4>Afternoon: Drive to West Yellowstone (~8–9 hrs)</h4>
+    <p><strong>Route:</strong> Banff → Calgary → Hwy 2 south → Sweetgrass border crossing → I-15 south → Bozeman → West Yellowstone</p>
+
+    <div class="tip-box">
+        <strong>💡 Drive strategy:</strong> Leave Banff by noon, arrive West Yellowstone by 8–9pm. 4 drivers makes this manageable. Fill up gas before crossing the border — cheaper in Canada with the exchange rate sometimes.
+    </div>
+
+    <p><span class="stay-badge">🏨 Overnight: West Yellowstone, MT</span></p>
+
+    <details>
+        <summary>🗺️ View Route Map — Banff → West Yellowstone (~650 mi)</summary>
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d3000000!2d-113!3d47!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x5370ca45910c4afd%3A0xcaafaebfd0234bea!2sBanff%2C+AB!3m2!1d51.1784!2d-115.5708!4m5!1s0x5350b94f8bffba91%3A0x79880024c8d5c3dd!2sWest+Yellowstone%2C+MT!3m2!1d44.6621!2d-111.1041!5e0!3m2!1sen!2sus!4v1" width="100%" height="300" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+            <p><a href="https://www.google.com/maps/dir/Banff,+AB/West+Yellowstone,+MT" target="_blank">📍 Open full directions in Google Maps</a></p>
+        </div>
+    </details>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="june26">🦬 June 26–28 — Yellowstone National Park</h2>
+
+<p>With nearly 3 days in Yellowstone, you can see everything without rushing. The park is huge — think of it in zones.</p>
+
+<div class="day-card">
+    <h3>June 26 — Geyser Country & Grand Canyon of Yellowstone</h3>
+
+    <h4>Morning: Geyser Basins (enter West Entrance)</h4>
+
+    <img class="photo" src="images/Grand Prismatic Spring aerial.jpg" alt="Grand Prismatic Spring">
+
+    <ul>
+        <li><strong>Grand Prismatic Spring</strong> — Giant rainbow hot spring (largest in North America)</li>
+        <li><strong>Grand Prismatic Overlook Trail</strong> (1.6mi RT) — Aerial view, worth the short hike</li>
+        <li><strong>Midway Geyser Basin</strong> boardwalk</li>
+        <li><strong>Old Faithful</strong> — Watch the eruption (every ~90 min, check predicted time at visitor center)</li>
+        <li>Walk the <strong>Upper Geyser Basin loop</strong> — Morning Glory Pool, Castle Geyser, Riverside Geyser</li>
+    </ul>
+
+    <img class="photo" src="images/Old Faithful eruption summer.jpg" alt="Old Faithful eruption">
+
+    <h4>Afternoon: Grand Canyon of the Yellowstone</h4>
+    <ul>
+        <li><strong>Artist Point</strong> — The classic viewpoint of Lower Falls (308 ft waterfall, golden canyon walls)</li>
+        <li><strong>Uncle Tom's Trail</strong> — Steep staircase descent for a closer view (328 steps down and back up)</li>
+        <li><strong>Upper Falls viewpoint</strong> — Different angle, quick stop</li>
+        <li>Drive through <strong>Hayden Valley</strong> — Watch for bison herds, bears, wolves</li>
+    </ul>
+
+    <img class="photo" src="images/Artist Point Lower Falls Yellowstone.jpg" alt="Artist Point - Lower Falls of Yellowstone">
+
+    <h4>Evening</h4>
+    <ul>
+        <li>Return to West Yellowstone for dinner</li>
+        <li>Check eruption predictions for next day if you want to catch other geysers</li>
+    </ul>
+
+    <p><span class="stay-badge">🏨 Overnight: West Yellowstone, MT</span></p>
+</div>
+
+<div class="day-card" id="june27">
+    <h3>June 27 — Lamar Valley, Mammoth Hot Springs & Northern Loop</h3>
+
+    <h4>Early Morning (6–8am): Lamar Valley Wildlife</h4>
+
+    <img class="photo" src="images/Lamar Valley bison herd.jpg" alt="Lamar Valley bison herd">
+
+    <ul>
+        <li>Drive to <strong>Lamar Valley</strong> — The "Serengeti of North America"</li>
+        <li>Best wildlife viewing at dawn: bison herds, wolves, grizzlies, pronghorn, coyotes</li>
+        <li>Bring binoculars & a thermos of coffee — pull over and watch</li>
+        <li>This is your best chance to see wolves in the wild</li>
+    </ul>
+
+    <h4>Mid-Morning: Mammoth Hot Springs</h4>
+
+    <img class="photo" src="images/Mammoth Hot Springs terraces.jpg" alt="Mammoth Hot Springs terraces">
+
+    <ul>
+        <li><strong>Mammoth Hot Springs terraces</strong> — Steaming travertine limestone formations</li>
+        <li>Walk upper and lower terrace boardwalks (~1.5 hrs total)</li>
+        <li>Elk often graze right on the lawns here</li>
+    </ul>
+
+    <h4>Afternoon: Options</h4>
+    <ul>
+        <li><strong>Tower Fall</strong> — Quick viewpoint stop on the way back</li>
+        <li><strong>Yellowstone Lake</strong> — Drive the east side, walk the shore</li>
+        <li><strong>Mud Volcano area</strong> — Bubbling mud pots, Dragon's Mouth Spring</li>
+        <li>Or revisit any geyser basin — evening light at Grand Prismatic is different than morning</li>
+    </ul>
+
+    <p><span class="stay-badge">🏨 Overnight: West Yellowstone, MT</span></p>
+</div>
+
+<div class="day-card" id="june28">
+    <h3>June 28 — Yellowstone Morning → Grand Teton → Drive Home</h3>
+
+    <h4>Morning: Last Yellowstone Stops</h4>
+    <ul>
+        <li><strong>West Thumb Geyser Basin</strong> — Hot springs bubbling into Yellowstone Lake (quick 30 min boardwalk)</li>
+        <li>Any spots you missed or want to revisit</li>
+        <li>Exit via <strong>South Entrance</strong> into Grand Teton</li>
+    </ul>
+
+    <h4>Grand Teton Quick Stops (on the way south):</h4>
+
+    <img class="photo" src="images/Oxbow Bend Grand Teton reflection.jpg" alt="Oxbow Bend, Grand Teton">
+
+    <ul>
+        <li><strong>Oxbow Bend</strong> — Classic Teton reflection, often moose or pelicans</li>
+        <li><strong>Signal Mountain Summit Drive</strong> — Short drive up for panoramic Teton views</li>
+        <li><strong>Jenny Lake</strong> — Quick stop at a turquoise alpine lake (optional)</li>
+        <li><strong>Jackson, WY</strong> — Grab lunch, see the elk antler arches in town square</li>
+    </ul>
+
+    <h4>Afternoon/Evening: Drive Home</h4>
+    <ul>
+        <li><strong>Route:</strong> Jackson → Rock Springs, WY → I-80 east → I-25 south → Colorado</li>
+        <li>~7–8 hours from Jackson to Colorado</li>
+        <li>4 drivers, rotate and push through</li>
+    </ul>
+
+    <p><span class="stay-badge">🏠 HOME by late evening</span></p>
+
+    <details>
+        <summary>🗺️ View Route Map — Yellowstone → Jackson → Colorado (~550 mi)</summary>
+        <div class="map-content">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m34!1m12!1m3!1d4000000!2d-109!3d42!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m19!3e0!4m5!1s0x5350b94f8bffba91%3A0x79880024c8d5c3dd!2sWest+Yellowstone%2C+MT!3m2!1d44.6621!2d-111.1041!4m5!1s0x53531a68bbb65c27%3A0x7465191024469969!2sJackson%2C+WY!3m2!1d43.4799!2d-110.7624!4m5!1s0x876b80aa231f17cf%3A0x118ef4f8278a36d6!2sDenver%2C+CO!3m2!1d39.7392358!2d-104.990251!5e0!3m2!1sen!2sus!4v1" width="100%" height="300" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+            <p><a href="https://www.google.com/maps/dir/West+Yellowstone,+MT/Jackson,+WY/Denver,+CO" target="_blank">📍 Open full directions in Google Maps</a></p>
+        </div>
+    </details>
+</div>
+
+<div class="tip-box">
+    <strong>Yellowstone — Key Info:</strong>
+    <ul>
+        <li><strong>No reservation needed</strong> — just entrance pass ($35/vehicle or America the Beautiful)</li>
+        <li><strong>Bison jams:</strong> Herds walk on the road. Can add 15–30+ min delays. Can't avoid it — enjoy it!</li>
+        <li><strong>Gas:</strong> Fill up in West Yellowstone. Also available at Old Faithful, Canyon, Grant Village.</li>
+        <li><strong>Food:</strong> Pack lunches/snacks — park food is mediocre and overpriced</li>
+        <li><strong>Cell service:</strong> Basically none inside the park. Download offline maps.</li>
+        <li><strong>Start early:</strong> Popular parking lots (Old Faithful, Grand Prismatic, Lamar) fill by 10am in summer.</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="photos">📸 Trip Photos</h2>
+<p>Everyone in the family can add photos during the trip! Open the shared album below, tap the "+" to add your pics.</p>
+
+<div class="day-card" style="text-align:center;">
+    <h3>Pointer Family — Banff Road Trip 2026</h3>
+    <p>All photos from the trip go here. Add yours anytime!</p>
+    <p style="margin-top:20px;">
+        <a href="PASTE_YOUR_GOOGLE_PHOTOS_ALBUM_LINK_HERE" target="_blank" style="display:inline-block; background:#2d6a4f; color:white; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:1.1rem;">📸 Open Shared Photo Album</a>
+    </p>
+    <p style="color:#718096; font-size:0.85rem; margin-top:12px;">Opens in Google Photos · Everyone can add photos · Works from any phone</p>
+</div>
+
+<div class="tip-box">
+    <strong>How to add your photos:</strong>
+    <ul>
+        <li>Click the button above to open the shared Google Photos album</li>
+        <li>Tap the "+" icon to add photos from your phone</li>
+        <li>No app install needed — works in your browser</li>
+        <li>📶 No service in the parks? No problem — photos will upload when you get WiFi</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="journal">📝 Trip Journal</h2>
+<p>A shared space for everyone to jot quick notes, favorite moments, restaurant recommendations, or funny quotes from the trip.</p>
+
+<div class="day-card" style="text-align:center;">
+    <h3>Pointer Family Trip Journal</h3>
+    <p>Add your thoughts, highlights, and memories here!</p>
+    <p style="margin-top:20px;">
+        <a href="PASTE_YOUR_GOOGLE_DOC_LINK_HERE" target="_blank" style="display:inline-block; background:#1a365d; color:white; padding:14px 28px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:1.1rem;">📝 Open Trip Journal</a>
+    </p>
+    <p style="color:#718096; font-size:0.85rem; margin-top:12px;">Opens in Google Docs · Everyone can edit · Add notes anytime</p>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="packing">✅ Packing Checklist</h2>
+
+<div class="day-card">
+    <h4>📄 Documents & Bookings</h4>
+    <ul class="checklist">
+        <li>Passports (required for Canada border)</li>
+        <li>Vehicle registration & insurance (confirm Canada coverage)</li>
+        <li>✅ Lake Louise / Moraine Lake / Castle Mountain shuttle (June 23)</li>
+        <li>America the Beautiful Pass ($80) — covers Glacier + Yellowstone + Grand Teton</li>
+        <li>Columbia Icefield Ice Explorer booking (banffjaspercollection.com) — if doing Icefields Parkway June 24</li>
+        <li>All accommodations booked (9 nights)</li>
+    </ul>
+
+    <h4>🎒 Gear</h4>
+    <ul class="checklist">
+        <li>Hiking boots (waterproof recommended — snowmelt crossings)</li>
+        <li>Microspikes/traction devices (high elevation snow at Glacier)</li>
+        <li>Rain jacket & layers (mornings 5–10°C / 40–50°F, afternoons 20–25°C / 68–77°F)</li>
+        <li>Sunscreen & sunglasses (high elevation UV is strong)</li>
+        <li>Bug spray (mosquitoes active near water in late June)</li>
+        <li>Reusable water bottles</li>
+        <li>Daypack for hikes</li>
+        <li>Swimsuit (Banff hot springs, lakes)</li>
+        <li>Binoculars (for wildlife — especially Lamar Valley wolves)</li>
+    </ul>
+
+    <h4>🚗 Car</h4>
+    <ul class="checklist">
+        <li>Full tank before entering parks</li>
+        <li>Snacks & water (limited services in parks)</li>
+        <li>Phone mount & offline maps downloaded (Glacier + Yellowstone have no service)</li>
+        <li>Playlists/podcasts for long drives</li>
+        <li>Car chargers for everyone's phones</li>
+        <li>Roadside emergency kit</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="reservations">🎫 Reservations & Booking</h2>
+
+<div class="warning-box">
+    <strong>🎉 Parks Canada is FREE this summer!</strong><br>
+    Free admission to all Parks Canada sites from June 19 – Sept 7, 2026 ("Canada Strong Pass"). Plus 25% off camping!
+</div>
+
+<h3>What Needs a Reservation</h3>
+<table>
+    <tr><th>What</th><th>Status</th><th>Where to Book</th></tr>
+    <tr class="reserved"><td>Lake Louise / Moraine Lake shuttle (June 23)</td><td><strong>✅ BOOKED</strong></td><td>reservation.pc.gc.ca</td></tr>
+    <tr><td>Columbia Icefield Tour (June 24)</td><td>Recommended</td><td>banffjaspercollection.com</td></tr>
+    <tr><td>Banff Gondola</td><td>Recommended</td><td>banffjaspercollection.com</td></tr>
+    <tr><td>Accommodations (9 nights)</td><td><strong>Required</strong></td><td>Hotels.com, Booking.com, etc.</td></tr>
+</table>
+
+<h3>What Does NOT Need a Reservation</h3>
+<table>
+    <tr><th>What</th><th>Notes</th></tr>
+    <tr><td>Going-to-the-Sun Road (Glacier)</td><td>No vehicle reservation in 2026! Just drive in.</td></tr>
+    <tr><td>Logan Pass parking (Glacier)</td><td>No time limit before July 1.</td></tr>
+    <tr><td>Yellowstone & Grand Teton</td><td>No reservation — just $35 entrance pass.</td></tr>
+    <tr><td>Banff / Waterton entry</td><td>FREE (Canada Strong Pass, June 19–Sept 7)</td></tr>
+    <tr><td>All Yellowstone sights</td><td>Just show up. Arrive early for parking at popular spots.</td></tr>
+</table>
+
+<h3>Accommodations Needed</h3>
+<table>
+    <tr><th>Night(s)</th><th>Location</th></tr>
+    <tr><td>June 19</td><td>Great Falls, MT</td></tr>
+    <tr><td>June 20–21</td><td>Glacier NP area (West Glacier, East Glacier, or St. Mary)</td></tr>
+    <tr><td>June 22–24</td><td>Banff or Canmore</td></tr>
+    <tr><td>June 25–27</td><td>West Yellowstone, MT</td></tr>
+</table>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="budget">💰 Budget Estimates</h2>
+<p><em>Family of 4 · 2021 4Runner TRD Off-Road · ~$5/gallon gas · 10 days</em></p>
+
+<table>
+    <tr><th>Item</th><th>Cost</th><th>Notes</th></tr>
+    <tr><td>Gas (~3,150 mi at ~17 mpg, ~$5/gal)</td><td><strong>~$925</strong></td><td>185 gallons. Canada gas is pricier (~$6-7 USD/gal equiv)</td></tr>
+    <tr><td>America the Beautiful Pass</td><td>$80</td><td>Covers Glacier + Yellowstone + Grand Teton</td></tr>
+    <tr><td>Banff / Waterton / Parks Canada</td><td><span class="free-badge">FREE</span></td><td>Canada Strong Pass, June 19–Sept 7</td></tr>
+    <tr><td>Moraine Lake shuttle (RT × 4 people)</td><td>~$204</td><td>~$51/person</td></tr>
+    <tr><td>Columbia Icefield Tour (× 4)</td><td>~$300</td><td>~$75/person</td></tr>
+    <tr><td>Banff Gondola (× 4)</td><td>~$220</td><td>~$55/person</td></tr>
+    <tr><td>Accommodations (9 nights)</td><td>~$1,800</td><td>Avg $200/night (2 rooms or Airbnb)</td></tr>
+    <tr><td>Food & dining (4 people × 10 days)</td><td>~$2,400</td><td>~$60/person/day average</td></tr>
+    <tr style="background:#c6f6d5; font-weight:bold;"><td><strong>ESTIMATED TOTAL</strong></td><td><strong>~$5,929</strong></td><td><strong>~$1,482 per person</strong></td></tr>
+</table>
+
+<div class="tip-box">
+    <strong>💡 Ways to save:</strong>
+    <ul>
+        <li>Skip the Banff Gondola — hike Tunnel Mountain for similar views (free)</li>
+        <li>Pack lunches for trail days — saves $30–50/day for the group</li>
+        <li>Airbnb/VRBO with a kitchen vs. hotels — cook some meals</li>
+        <li>Fill up gas on the US side before crossing into Canada</li>
+        <li>25% off Parks Canada camping if you camp any nights</li>
+    </ul>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="links">🔗 Quick Reference Links</h2>
+
+<table>
+    <tr><th>Resource</th><th>Link</th></tr>
+    <tr><td>Going-to-the-Sun Road Status</td><td><a href="https://www.nps.gov/glac/planyourvisit/roadstatus.htm" target="_blank">nps.gov/glac/planyourvisit/roadstatus.htm</a></td></tr>
+    <tr><td>Parks Canada Reservations</td><td><a href="https://reservation.pc.gc.ca" target="_blank">reservation.pc.gc.ca</a></td></tr>
+    <tr><td>Columbia Icefield Tours</td><td><a href="https://www.banffjaspercollection.com/attractions/columbia-icefield/" target="_blank">banffjaspercollection.com</a></td></tr>
+    <tr><td>Banff Gondola</td><td><a href="https://www.banffjaspercollection.com/attractions/banff-gondola/" target="_blank">banffjaspercollection.com/attractions/banff-gondola</a></td></tr>
+    <tr><td>Roam Transit (Lake Louise shuttle)</td><td><a href="https://roamtransit.com" target="_blank">roamtransit.com</a></td></tr>
+    <tr><td>Yellowstone Geyser Predictions</td><td><a href="https://www.nps.gov/yell/planyourvisit/geyser-predictions.htm" target="_blank">nps.gov/yell/planyourvisit/geyser-predictions.htm</a></td></tr>
+    <tr><td>Border Wait Times (Canada)</td><td><a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank">cbsa-asfc.gc.ca/bwt-taf</a></td></tr>
+    <tr><td>Weather — Banff</td><td><a href="https://weather.gc.ca/city/pages/ab-49_metric_e.html" target="_blank">weather.gc.ca (Banff)</a></td></tr>
+    <tr><td>Weather — Glacier NP</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=48.5&lon=-113.9" target="_blank">weather.gov (West Glacier, MT)</a></td></tr>
+    <tr><td>Weather — Yellowstone</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=44.66&lon=-111.1" target="_blank">weather.gov (West Yellowstone, MT)</a></td></tr>
+    <tr><td>Recreation.gov (Park Passes)</td><td><a href="https://www.recreation.gov" target="_blank">recreation.gov</a></td></tr>
+    <tr><td>Moraine Lake Bus (Private Shuttle)</td><td><a href="https://morainelakebus.com" target="_blank">morainelakebus.com</a></td></tr>
+</table>
+
+<div class="footer">
+    <p>🏔️ Have an incredible trip! Four parks, ten days, one unforgettable loop through the Rockies. 🏔️</p>
+</div>
+
+</div>
+
+<script>
+// Back to top button visibility
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+        backToTop.classList.add('visible');
+    } else {
+        backToTop.classList.remove('visible');
+    }
+});
+
+// Highlight active nav link on scroll
+const sections = document.querySelectorAll('h2[id], .day-card[id]');
+const navLinks = document.querySelectorAll('.nav a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
