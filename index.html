@@ -6,12 +6,13 @@
     <title>Colorado to Banff Road Trip — June 19–28, 2026</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.7;
             color: #2d3748;
             background: #f7fafc;
+            overflow-x: hidden;
         }
         /* Navigation */
         .nav {
@@ -27,10 +28,12 @@
             flex-wrap: wrap;
         }
         .nav-links {
-            overflow-x: auto;
             white-space: nowrap;
             flex: 1;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
         }
+        .nav-links::-webkit-scrollbar { display: none; } /* Chrome/Safari */
         .nav a {
             color: #e2e8f0;
             text-decoration: none;
@@ -52,6 +55,9 @@
             margin-right: 8px;
             display: inline-block;
         }
+        .nav-title {
+            display: none;
+        }
         .hamburger {
             display: none;
             background: none;
@@ -71,23 +77,33 @@
                 justify-content: space-between;
             }
             .nav-label { display: none; }
+            .nav-title { display: block; color: white; font-weight: 600; font-size: 0.95rem; }
             .hamburger { display: block; }
             .nav-links {
                 display: none;
                 width: 100%;
-                padding-top: 10px;
+                padding-top: 15px;
+                padding-bottom: 10px;
                 white-space: normal;
+                overflow-x: visible;
             }
             .nav-links.open {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
             }
             .nav-links.open a {
-                padding: 10px 14px;
-                font-size: 0.95rem;
-                flex: 0 0 auto;
+                padding: 12px 10px;
+                font-size: 0.9rem;
+                text-align: center;
+                border-radius: 8px;
+                background: rgba(255,255,255,0.08);
             }
+            .nav-links.open a:hover,
+            .nav-links.open a.active {
+                background: #2d6a4f;
+            }
+        }
             .nav-title {
                 color: white;
                 font-weight: 600;
@@ -271,20 +287,21 @@
             .hero p { font-size: 1rem; }
             .hero { padding: 70px 15px; max-height: none; }
             .photo-row { grid-template-columns: 1fr; }
-            .container { padding: 15px; }
-            .day-card { padding: 18px; margin: 20px 0; }
-            .overview-section { margin-top: -20px; padding: 20px 15px; border-radius: 12px; }
-            h2 { font-size: 1.4rem; margin: 40px 0 15px; }
-            h3 { font-size: 1.15rem; }
+            .container { padding: 12px; max-width: 100%; }
+            .day-card { padding: 16px; margin: 18px 0; }
+            .overview-section { margin-top: -20px; padding: 18px 12px; border-radius: 12px; }
+            h2 { font-size: 1.35rem; margin: 35px 0 15px; }
+            h3 { font-size: 1.1rem; }
             h4 { font-size: 0.95rem; }
-            p, li { font-size: 0.95rem; }
-            table { font-size: 0.85rem; }
-            th, td { padding: 8px 10px; }
-            .tip-box, .warning-box { padding: 12px; font-size: 0.9rem; }
-            .free-badge, .stay-badge { font-size: 0.8rem; }
-            .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; font-size: 1.1rem; }
-            details summary { font-size: 0.9rem; padding: 10px 14px; }
-            iframe { height: 220px !important; }
+            p, li { font-size: 0.92rem; line-height: 1.6; }
+            table { font-size: 0.82rem; }
+            th, td { padding: 8px 8px; }
+            .tip-box, .warning-box { padding: 12px; font-size: 0.88rem; }
+            .free-badge, .stay-badge { font-size: 0.78rem; }
+            .back-to-top { bottom: 20px; right: 15px; width: 40px; height: 40px; font-size: 1.1rem; }
+            details summary { font-size: 0.88rem; padding: 10px 12px; }
+            iframe { height: 200px !important; }
+            .photo { border-radius: 6px; }
         }
     </style>
 </head>
@@ -875,11 +892,11 @@
 
 <h3>What Needs a Reservation</h3>
 <table>
-    <tr><th>What</th><th>Status</th><th>Where to Book</th></tr>
-    <tr class="reserved"><td>Lake Louise / Moraine Lake shuttle (June 23)</td><td><strong>✅ BOOKED</strong></td><td>reservation.pc.gc.ca</td></tr>
-    <tr><td>Columbia Icefield Tour (June 24)</td><td>Recommended</td><td>banffjaspercollection.com</td></tr>
-    <tr><td>Banff Gondola</td><td>Recommended</td><td>banffjaspercollection.com</td></tr>
-    <tr><td>Accommodations (9 nights)</td><td><strong>Required</strong></td><td>Hotels.com, Booking.com, etc.</td></tr>
+    <tr><th>What</th><th>Status</th><th>Book</th></tr>
+    <tr class="reserved"><td>Lake Louise / Moraine Lake shuttle (June 23)</td><td><strong>✅ BOOKED</strong></td><td><a href="https://reservation.pc.gc.ca" target="_blank">Visit →</a></td></tr>
+    <tr><td>Columbia Icefield Tour (June 24)</td><td>Recommended</td><td><a href="https://www.banffjaspercollection.com/attractions/columbia-icefield/" target="_blank">Visit →</a></td></tr>
+    <tr><td>Banff Gondola</td><td>Recommended</td><td><a href="https://www.banffjaspercollection.com/attractions/banff-gondola/" target="_blank">Visit →</a></td></tr>
+    <tr><td>Accommodations (9 nights)</td><td><strong>Required</strong></td><td><a href="https://www.booking.com" target="_blank">Visit →</a></td></tr>
 </table>
 
 <h3>What Does NOT Need a Reservation</h3>
@@ -937,19 +954,19 @@
 <h2 id="links">🔗 Quick Reference Links</h2>
 
 <table>
-    <tr><th>Resource</th><th>Link</th></tr>
-    <tr><td>Going-to-the-Sun Road Status</td><td><a href="https://www.nps.gov/glac/planyourvisit/roadstatus.htm" target="_blank">nps.gov/glac/planyourvisit/roadstatus.htm</a></td></tr>
-    <tr><td>Parks Canada Reservations</td><td><a href="https://reservation.pc.gc.ca" target="_blank">reservation.pc.gc.ca</a></td></tr>
-    <tr><td>Columbia Icefield Tours</td><td><a href="https://www.banffjaspercollection.com/attractions/columbia-icefield/" target="_blank">banffjaspercollection.com</a></td></tr>
-    <tr><td>Banff Gondola</td><td><a href="https://www.banffjaspercollection.com/attractions/banff-gondola/" target="_blank">banffjaspercollection.com/attractions/banff-gondola</a></td></tr>
-    <tr><td>Roam Transit (Lake Louise shuttle)</td><td><a href="https://roamtransit.com" target="_blank">roamtransit.com</a></td></tr>
-    <tr><td>Yellowstone Geyser Predictions</td><td><a href="https://www.nps.gov/yell/planyourvisit/geyser-predictions.htm" target="_blank">nps.gov/yell/planyourvisit/geyser-predictions.htm</a></td></tr>
-    <tr><td>Border Wait Times (Canada)</td><td><a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank">cbsa-asfc.gc.ca/bwt-taf</a></td></tr>
-    <tr><td>Weather — Banff</td><td><a href="https://weather.gc.ca/city/pages/ab-49_metric_e.html" target="_blank">weather.gc.ca (Banff)</a></td></tr>
-    <tr><td>Weather — Glacier NP</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=48.5&lon=-113.9" target="_blank">weather.gov (West Glacier, MT)</a></td></tr>
-    <tr><td>Weather — Yellowstone</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=44.66&lon=-111.1" target="_blank">weather.gov (West Yellowstone, MT)</a></td></tr>
-    <tr><td>Recreation.gov (Park Passes)</td><td><a href="https://www.recreation.gov" target="_blank">recreation.gov</a></td></tr>
-    <tr><td>Moraine Lake Bus (Private Shuttle)</td><td><a href="https://morainelakebus.com" target="_blank">morainelakebus.com</a></td></tr>
+    <tr><th>Resource</th><th></th></tr>
+    <tr><td>Going-to-the-Sun Road Status</td><td><a href="https://www.nps.gov/glac/planyourvisit/roadstatus.htm" target="_blank">Visit →</a></td></tr>
+    <tr><td>Parks Canada Reservations</td><td><a href="https://reservation.pc.gc.ca" target="_blank">Visit →</a></td></tr>
+    <tr><td>Columbia Icefield Tours</td><td><a href="https://www.banffjaspercollection.com/attractions/columbia-icefield/" target="_blank">Visit →</a></td></tr>
+    <tr><td>Banff Gondola</td><td><a href="https://www.banffjaspercollection.com/attractions/banff-gondola/" target="_blank">Visit →</a></td></tr>
+    <tr><td>Roam Transit (Lake Louise shuttle)</td><td><a href="https://roamtransit.com" target="_blank">Visit →</a></td></tr>
+    <tr><td>Yellowstone Geyser Predictions</td><td><a href="https://www.nps.gov/yell/planyourvisit/geyser-predictions.htm" target="_blank">Visit →</a></td></tr>
+    <tr><td>Border Wait Times (Canada)</td><td><a href="https://www.cbsa-asfc.gc.ca/bwt-taf/menu-eng.html" target="_blank">Visit →</a></td></tr>
+    <tr><td>Weather — Banff</td><td><a href="https://weather.gc.ca/city/pages/ab-49_metric_e.html" target="_blank">Visit →</a></td></tr>
+    <tr><td>Weather — Glacier NP</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=48.5&lon=-113.9" target="_blank">Visit →</a></td></tr>
+    <tr><td>Weather — Yellowstone</td><td><a href="https://forecast.weather.gov/MapClick.php?lat=44.66&lon=-111.1" target="_blank">Visit →</a></td></tr>
+    <tr><td>Recreation.gov (Park Passes)</td><td><a href="https://www.recreation.gov" target="_blank">Visit →</a></td></tr>
+    <tr><td>Moraine Lake Bus (Private Shuttle)</td><td><a href="https://morainelakebus.com" target="_blank">Visit →</a></td></tr>
 </table>
 
 <div class="footer">
