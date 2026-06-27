@@ -484,6 +484,17 @@
         .trip-complete-overlay .stat .num { font-family: 'Fraunces', serif; font-size: 2.1rem; font-weight: 600; }
         .trip-complete-overlay .stat .lbl { font-size: .7rem; opacity: .7; text-transform: uppercase; letter-spacing: .12em; }
         .trip-complete-overlay .dismiss { margin-top: 18px; background: #fff; color: var(--pine-deep); border: none; padding: 13px 30px; border-radius: 999px; font-size: 1rem; font-weight: 800; cursor: pointer; }
+        /* Animal Tracker */
+        .animal-card { background: var(--paper); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .animal-card .animal-emoji { font-size: 1.4rem; }
+        .animal-card .animal-info { flex: 1; }
+        .animal-card .animal-name { font-size: .82rem; font-weight: 700; color: var(--ink); }
+        .animal-card .animal-count { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--pine); min-width: 28px; text-align: center; }
+        .animal-card .animal-btns { display: flex; gap: 4px; }
+        .animal-card .animal-btns button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+        .animal-card .animal-btns button:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .animal-card .animal-btns button:active { transform: scale(.9); }
+        .animal-card.hoping { border-style: dashed; opacity: .7; }
     </style>
 </head>
 <body>
@@ -1004,6 +1015,18 @@
 <!-- GAMES -->
 <h2 id="bingo">Games</h2>
 <p class="section-lede">For the long drive days. All work offline!</p>
+
+<!-- ANIMAL TRACKER -->
+<h3 class="games-group">🐾 Wildlife Tracker</h3>
+<p style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Tap + or − to count sightings. Family-wide tally!</p>
+
+<details class="game" open>
+<summary>🐾 Animal Sightings — <span id="animalTotal">0</span> total</summary>
+<div class="gamebody">
+<div id="animalGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+<button class="mini-btn" style="margin-top:12px;" onclick="if(confirm('Reset all animal counts?')){localStorage.removeItem('ptr2-animals');location.reload();}">Reset counts</button>
+</div>
+</details>
 
 <!-- SOLO GAMES -->
 <h3 class="games-group">📱 Solo — play on your own phone</h3>
@@ -1989,6 +2012,61 @@ function shareTrip(){
         reader.readAsText(f);
         rf.value = '';
     });
+})();
+
+// Animal Tracker
+(function(){
+    var ANIMALS = [
+        {id:'deer', emoji:'🦌', name:'Deer'},
+        {id:'elk', emoji:'🦌', name:'Elk'},
+        {id:'bighorn', emoji:'🐏', name:'Bighorn Sheep'},
+        {id:'mtngoat', emoji:'🐐', name:'Mountain Goat'},
+        {id:'moose', emoji:'🫎', name:'Moose'},
+        {id:'blackbear', emoji:'🐻', name:'Black Bear'},
+        {id:'grizzly', emoji:'🐻‍❄️', name:'Grizzly Bear'},
+        {id:'beaver', emoji:'🦫', name:'Beaver'},
+        {id:'falcon', emoji:'🦅', name:'Peregrine Falcon'},
+        {id:'wolf', emoji:'🐺', name:'Wolf', hoping:true},
+        {id:'coyote', emoji:'🐺', name:'Coyote', hoping:true}
+    ];
+    var KEY = 'ptr2-animals';
+    var counts = {}; try{counts=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
+    ANIMALS.forEach(function(a){ if(counts[a.id]==null) counts[a.id]=0; });
+    function save(){ localStorage.setItem(KEY, JSON.stringify(counts)); updateTotal(); }
+    function updateTotal(){
+        var t=0; ANIMALS.forEach(function(a){ t+=counts[a.id]||0; });
+        var el=document.getElementById('animalTotal'); if(el) el.textContent=t;
+    }
+    var grid = document.getElementById('animalGrid');
+    if(grid){
+        ANIMALS.forEach(function(a){
+            var card = document.createElement('div');
+            card.className = 'animal-card' + (a.hoping?' hoping':'');
+            card.innerHTML = '<span class="animal-emoji">'+a.emoji+'</span>'
+                + '<div class="animal-info"><div class="animal-name">'+a.name+(a.hoping?' 🤞':'')+'</div></div>'
+                + '<span class="animal-count" id="ac-'+a.id+'">'+(counts[a.id]||0)+'</span>'
+                + '<div class="animal-btns"><button class="ab-minus" data-id="'+a.id+'">−</button><button class="ab-plus" data-id="'+a.id+'">+</button></div>';
+            grid.appendChild(card);
+        });
+        grid.querySelectorAll('.ab-plus').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                var id=btn.getAttribute('data-id');
+                counts[id]=(counts[id]||0)+1;
+                document.getElementById('ac-'+id).textContent=counts[id];
+                if(navigator.vibrate) navigator.vibrate(20);
+                save();
+            });
+        });
+        grid.querySelectorAll('.ab-minus').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                var id=btn.getAttribute('data-id');
+                if(counts[id]>0) counts[id]--;
+                document.getElementById('ac-'+id).textContent=counts[id];
+                save();
+            });
+        });
+        updateTotal();
+    }
 })();
 </script>
 </body>
